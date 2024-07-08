@@ -1,14 +1,16 @@
 import React from "react";
-import FeedConsultations from "./_components/FeedConsultations"; // Adjust the path as needed
+import MyConsultations from "./_components/MyConsultationCards"; // Adjust the path as needed
 import {
   Consultation,
   ConsultationStatus,
   ConsultationType,
-} from "../models/consultation"; // Adjust the path as needed
-import { PatientProfile } from "../models/patientProfile";
-import { DoctorProfile } from "../models/doctorProfile";
-import User from "../models/user";
-import Sidebar from "../components/sidebar/sidebar";
+} from "../../models/consultation"; // Adjust the path as needed
+import { PatientProfile } from "../../models/patientProfile";
+import { DoctorProfile } from "../../models/doctorProfile";
+import User from "../../models/user";
+import ChatMainContents from "../chat/_components/chatMessagesarea";
+import FullScreenButtons from "./_components/actions";
+import Sidebar from "../../components/sidebar/sidebar";
 
 // Sample Users
 const patientUser1 = new User(
@@ -93,36 +95,44 @@ const consultation2 = new Consultation(
 // Convert class instances to plain objects
 const plainConsultation1 = JSON.parse(JSON.stringify(consultation1));
 const plainConsultation2 = JSON.parse(JSON.stringify(consultation2));
-const plainConsultation3 = JSON.parse(JSON.stringify(consultation2));
-const plainConsultation4 = JSON.parse(JSON.stringify(consultation2));
 
-const FeedPage = () => {
+const MyConsultationsPage = () => {
   // Sample consultations data
   const consultations = [
     plainConsultation1,
     plainConsultation2,
-    plainConsultation3,
-    plainConsultation4,
-    plainConsultation4,
-    plainConsultation4,
-    plainConsultation4,
-    plainConsultation4,
-    plainConsultation4,
-    plainConsultation4,
-    plainConsultation4,
-    plainConsultation4,
-    plainConsultation4,
+    plainConsultation2,
+    plainConsultation2,
+    plainConsultation2,
+    plainConsultation2,
+    plainConsultation2,
+    plainConsultation2,
+    plainConsultation2,
+    plainConsultation2,
   ];
 
   return (
-    <div className="flex bg-gray-100">
+    <div className="flex h-screen overflow-hidden ">
       <Sidebar />
-      <main className="ml-64 p-4">
-        <h1 className="text-black font-semibold text-4xl">Feed</h1>
-        <FeedConsultations consultations={consultations} />
+
+      <main className="flex flex-col w-full p-4 ml-64">
+        <h1 className="text-2xl text-black font-semibold mb-4 ">
+          My Consultations
+        </h1>
+        <div className="flex flex-row flex-grow h-full">
+          <div className="w-1/3  text-black overflow-y-auto">
+            <MyConsultations consultations={consultations} />
+          </div>
+          <div className="w-1/2 h-full text-black ">
+            <ChatMainContents />
+          </div>
+          <div className="w-1/6 h-full">
+            <FullScreenButtons />
+          </div>
+        </div>
       </main>
     </div>
   );
 };
 
-export default FeedPage;
+export default MyConsultationsPage;

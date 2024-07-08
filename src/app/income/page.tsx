@@ -1,14 +1,13 @@
 import React from "react";
-import FeedConsultations from "./_components/FeedConsultations"; // Adjust the path as needed
+import FeedConsultations from "./../_components/FeedConsultations"; // Adjust the path as needed
 import {
   Consultation,
   ConsultationStatus,
   ConsultationType,
-} from "../models/consultation"; // Adjust the path as needed
-import { PatientProfile } from "../models/patientProfile";
-import { DoctorProfile } from "../models/doctorProfile";
-import User from "../models/user";
-import Sidebar from "../components/sidebar/sidebar";
+} from "../../models/consultation"; // Adjust the path as needed
+import { PatientProfile } from "../../models/patientProfile";
+import { DoctorProfile } from "../../models/doctorProfile";
+import User from "../../models/user";
 
 // Sample Users
 const patientUser1 = new User(
@@ -108,15 +107,10 @@ const FeedPage = () => {
     plainConsultation4,
     plainConsultation4,
     plainConsultation4,
-    plainConsultation4,
-    plainConsultation4,
-    plainConsultation4,
-    plainConsultation4,
   ];
 
   return (
     <div className="flex bg-gray-100">
-      <Sidebar />
       <main className="ml-64 p-4">
         <h1 className="text-black font-semibold text-4xl">Feed</h1>
         <FeedConsultations consultations={consultations} />
