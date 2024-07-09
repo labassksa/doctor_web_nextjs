@@ -13,7 +13,7 @@ import Sidebar from "../components/sidebar/sidebar";
 // Sample Users
 const patientUser1 = new User(
   1,
-  "John",
+  "yazeed",
   "Doe",
   "123456789",
   "1990-01-01",
@@ -24,7 +24,7 @@ const patientUser1 = new User(
 );
 const patientUser2 = new User(
   2,
-  "Jane",
+  "yazeed",
   "Smith",
   "987654321",
   "1985-05-05",

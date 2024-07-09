@@ -26,8 +26,8 @@ const patientUser1 = new User(
 );
 const patientUser2 = new User(
   2,
-  "Jane",
-  "Smith",
+  "John",
+  "Yazeed",
   "987654321",
   "1985-05-05",
   "Female",
@@ -73,7 +73,7 @@ const consultation1 = new Consultation(
   null,
   false,
   false,
-  false
+  false 
 );
 
 const consultation2 = new Consultation(
