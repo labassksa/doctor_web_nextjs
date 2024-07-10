@@ -14,17 +14,52 @@ const PrescriptionPage: React.FC = () => {
   const [isAllergyModalOpen, setIsAllergyModalOpen] = useState(false);
   const [isDiagnosisModalOpen, setIsDiagnosisModalOpen] = useState(false);
 
-  const openDrugModal = () => setIsDrugModalOpen(true);
+  const [selectedDrugs, setSelectedDrugs] = useState<any[]>([]);
+  const [selectedAllergies, setSelectedAllergies] = useState<any[]>([]);
+  const [selectedDiagnosis, setSelectedDiagnosis] = useState<any[]>([]);
+
+  const [currentSelection, setCurrentSelection] = useState<any>(null);
+
+  const openDrugModal = () => {
+    setCurrentSelection(null);
+    setIsDrugModalOpen(true);
+  };
   const closeDrugModal = () => setIsDrugModalOpen(false);
 
-  const openAllergyModal = () => setIsAllergyModalOpen(true);
+  const openAllergyModal = () => {
+    setCurrentSelection(null);
+    setIsAllergyModalOpen(true);
+  };
   const closeAllergyModal = () => setIsAllergyModalOpen(false);
 
-  const openDiagnosisModal = () => setIsDiagnosisModalOpen(true);
+  const openDiagnosisModal = () => {
+    setCurrentSelection(null);
+    setIsDiagnosisModalOpen(true);
+  };
   const closeDiagnosisModal = () => setIsDiagnosisModalOpen(false);
 
   const handleSearch = (query: string) => {
     console.log("Search query:", query);
+  };
+
+  const handleSelect = (item: any) => {
+    setCurrentSelection(item);
+  };
+
+  const handleAdd = () => {
+    if (currentSelection) {
+      if (isDrugModalOpen) {
+        setSelectedDrugs([...selectedDrugs, currentSelection]);
+        closeDrugModal();
+      } else if (isAllergyModalOpen) {
+        setSelectedAllergies([...selectedAllergies, currentSelection]);
+        closeAllergyModal();
+      } else if (isDiagnosisModalOpen) {
+        setSelectedDiagnosis([...selectedDiagnosis, currentSelection]);
+        closeDiagnosisModal();
+      }
+      setCurrentSelection(null); // Clear the current selection
+    }
   };
 
   return (
@@ -32,24 +67,76 @@ const PrescriptionPage: React.FC = () => {
       <TabComponent />
       <Title />
       <PatientInfo />
+
       <ActionButton label="Drugs" onClick={openDrugModal} />
+      <div>
+        {selectedDrugs.map((drug, index) => (
+          <div key={index} className="p-2 border rounded mt-2">
+            {drug.code} - {drug.description}
+          </div>
+        ))}
+      </div>
+
       <ActionButton label="Allergies" onClick={openAllergyModal} />
+      <div>
+        {selectedAllergies.map((allergy, index) => (
+          <div key={index} className="p-2 border rounded mt-2">
+            {allergy.code} - {allergy.description}
+          </div>
+        ))}
+      </div>
+
       <ActionButton label="Diagnosis" onClick={openDiagnosisModal} />
+      <div>
+        {selectedDiagnosis.map((diagnosis, index) => (
+          <div key={index} className="p-2 border rounded mt-2">
+            {diagnosis.code} - {diagnosis.description}
+          </div>
+        ))}
+      </div>
+
       <IssuePrescriptionButton />
 
-      <Modal isOpen={isDrugModalOpen} onClose={closeDrugModal} title="Add Drugs">
-        <SearchBar placeholder="Search for a drug..." onSearch={handleSearch} />
-        {/* Add additional content here for drug selection */}
+      <Modal
+        isOpen={isDrugModalOpen}
+        onClose={closeDrugModal}
+        title="Add Drugs"
+        onAdd={handleAdd}
+      >
+        <SearchBar
+          placeholder="Search for a drug..."
+          onSearch={handleSearch}
+          onSelect={handleSelect}
+          selectedItem={currentSelection} // Pass the selected item
+        />
       </Modal>
 
-      <Modal isOpen={isAllergyModalOpen} onClose={closeAllergyModal} title="Add Allergies">
-        <SearchBar placeholder="Search for an allergy..." onSearch={handleSearch} />
-        {/* Add additional content here for allergy selection */}
+      <Modal
+        isOpen={isAllergyModalOpen}
+        onClose={closeAllergyModal}
+        title="Add Allergies"
+        onAdd={handleAdd}
+      >
+        <SearchBar
+          placeholder="Search for an allergy..."
+          onSearch={handleSearch}
+          onSelect={handleSelect}
+          selectedItem={currentSelection} // Pass the selected item
+        />
       </Modal>
 
-      <Modal isOpen={isDiagnosisModalOpen} onClose={closeDiagnosisModal} title="Add Diagnosis">
-        <SearchBar placeholder="Search for a diagnosis..." onSearch={handleSearch} />
-        {/* Add additional content here for diagnosis selection */}
+      <Modal
+        isOpen={isDiagnosisModalOpen}
+        onClose={closeDiagnosisModal}
+        title="Add Diagnosis"
+        onAdd={handleAdd}
+      >
+        <SearchBar
+          placeholder="Search for a diagnosis..."
+          onSearch={handleSearch}
+          onSelect={handleSelect}
+          selectedItem={currentSelection} // Pass the selected item
+        />
       </Modal>
     </div>
   );
