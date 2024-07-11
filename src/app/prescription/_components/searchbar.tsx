@@ -47,7 +47,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onSearch, onSelect, 
   };
 
   return (
-    <div className="relative w-full mb-4">
+    <div className="relative w-full mb-4 text-black">
       <TextField
         fullWidth
         variant="outlined"
@@ -64,12 +64,12 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onSearch, onSelect, 
         className="mb-2"
       />
       {results.length > 0 && (
-        <div className="absolute top-full left-0 w-full bg-white border border-gray-300 rounded mt-1 z-10">
+        <div className="absolute top-full text-black left-0 w-full bg-white border border-gray-300 rounded text-black mt-1 z-10">
           {results.map((result, index) => (
             <div
               key={index}
               onClick={() => handleSelect(result)}
-              className="p-2 hover:bg-gray-100 cursor-pointer"
+              className="p-2 hover:bg-gray-100 cursor-pointer text-black"
             >
               <div>{result.code} - {result.description}</div>
             </div>

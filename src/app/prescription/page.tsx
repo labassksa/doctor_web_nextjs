@@ -63,7 +63,7 @@ const PrescriptionPage: React.FC = () => {
   };
 
   return (
-    <div className="flex-grow p-8">
+    <div className="flex-grow p-8 text-black">
       <TabComponent />
       <Title />
       <PatientInfo />
@@ -71,7 +71,7 @@ const PrescriptionPage: React.FC = () => {
       <ActionButton label="Drugs" onClick={openDrugModal} />
       <div>
         {selectedDrugs.map((drug, index) => (
-          <div key={index} className="p-2 border rounded mt-2">
+          <div key={index} className="p-2 border rounded mt-2 text-black">
             {drug.code} - {drug.description}
           </div>
         ))}
@@ -80,7 +80,7 @@ const PrescriptionPage: React.FC = () => {
       <ActionButton label="Allergies" onClick={openAllergyModal} />
       <div>
         {selectedAllergies.map((allergy, index) => (
-          <div key={index} className="p-2 border rounded mt-2">
+          <div key={index} className="p-2 border rounded mt-2 text-black">
             {allergy.code} - {allergy.description}
           </div>
         ))}
@@ -89,7 +89,7 @@ const PrescriptionPage: React.FC = () => {
       <ActionButton label="Diagnosis" onClick={openDiagnosisModal} />
       <div>
         {selectedDiagnosis.map((diagnosis, index) => (
-          <div key={index} className="p-2 border rounded mt-2">
+          <div key={index} className="p-2 border rounded mt-2 text-black">
             {diagnosis.code} - {diagnosis.description}
           </div>
         ))}

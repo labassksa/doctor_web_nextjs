@@ -14,12 +14,12 @@ const TabComponent: React.FC = () => {
   ];
 
   return (
-    <div className="flex justify-center p-4 border-b">
+    <div className="flex justify-center p-4 text-black border-b">
       <div className="flex space-x-8">
         {tabs.map((tab) => (
           <Link key={tab.name} href={tab.href} passHref>
             <div
-              className={`cursor-pointer px-4 py-2 rounded ${
+              className={`cursor-pointer px-4 py-2 rounded text-black ${
                 pathname === tab.href ? 'bg-green-100' : 'text-gray-500 hover:text-black'
               }`}
             >

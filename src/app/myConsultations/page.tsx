@@ -15,7 +15,7 @@ import Sidebar from "../../components/sidebar/sidebar";
 // Sample Users
 const patientUser1 = new User(
   1,
-  "John",
+  "Khalid",
   "Doe",
   "123456789",
   "1990-01-01",
