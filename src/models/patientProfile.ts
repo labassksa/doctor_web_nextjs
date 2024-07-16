@@ -1,11 +1,14 @@
-// models/PatientProfile.ts
 import User from "./user";
 import { Consultation } from "./consultation";
 
 export class PatientProfile {
-  constructor(
-    public id: number,
-    public user: User,
-    public consultations?: Consultation[]
-  ) {}
+  id: number;
+  user: User;
+  consultations?: Consultation[];
+
+  constructor({ id, user, consultations = [] }: { id: number; user: User; consultations?: Consultation[] }) {
+    this.id = id;
+    this.user = user;
+    this.consultations = consultations;
+  }
 }

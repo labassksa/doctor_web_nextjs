@@ -6,6 +6,7 @@ import Title from "./_components/title";
 import PatientInfo from "./_components/PatientInfo";
 import ActionButton from "./_components/ActionButton";
 import IssuePrescriptionButton from "./_components/IssuePrescriptionButton";
+import DrugModal from "./_components/DrugModal";
 import Modal from "./_components/Modal";
 import SearchBar from "./_components/searchbar";
 
@@ -46,11 +47,15 @@ const PrescriptionPage: React.FC = () => {
     setCurrentSelection(item);
   };
 
+  const handleAddDrug = (drug: any) => {
+    setSelectedDrugs([...selectedDrugs, drug]);
+    closeDrugModal();
+  };
+
   const handleAdd = () => {
     if (currentSelection) {
       if (isDrugModalOpen) {
-        setSelectedDrugs([...selectedDrugs, currentSelection]);
-        closeDrugModal();
+        handleAddDrug(currentSelection);
       } else if (isAllergyModalOpen) {
         setSelectedAllergies([...selectedAllergies, currentSelection]);
         closeAllergyModal();
@@ -62,6 +67,24 @@ const PrescriptionPage: React.FC = () => {
     }
   };
 
+  const handleRemoveDrug = (index: number) => {
+    const newDrugs = [...selectedDrugs];
+    newDrugs.splice(index, 1);
+    setSelectedDrugs(newDrugs);
+  };
+
+  const handleRemoveAllergy = (index: number) => {
+    const newAllergies = [...selectedAllergies];
+    newAllergies.splice(index, 1);
+    setSelectedAllergies(newAllergies);
+  };
+
+  const handleRemoveDiagnosis = (index: number) => {
+    const newDiagnosis = [...selectedDiagnosis];
+    newDiagnosis.splice(index, 1);
+    setSelectedDiagnosis(newDiagnosis);
+  };
+
   return (
     <div className="flex-grow p-8 text-black">
       <TabComponent />
@@ -71,8 +94,9 @@ const PrescriptionPage: React.FC = () => {
       <ActionButton label="Drugs" onClick={openDrugModal} />
       <div>
         {selectedDrugs.map((drug, index) => (
-          <div key={index} className="p-2 border rounded mt-2 text-black">
-            {drug.code} - {drug.description}
+          <div key={index} className="p-2 border rounded mt-2 text-black flex justify-between items-center">
+            <span>{drug.code} - {drug.description}</span>
+            <button onClick={() => handleRemoveDrug(index)} className="text-red-500 ml-4">&times;</button>
           </div>
         ))}
       </div>
@@ -80,8 +104,9 @@ const PrescriptionPage: React.FC = () => {
       <ActionButton label="Allergies" onClick={openAllergyModal} />
       <div>
         {selectedAllergies.map((allergy, index) => (
-          <div key={index} className="p-2 border rounded mt-2 text-black">
-            {allergy.code} - {allergy.description}
+          <div key={index} className="p-2 border rounded mt-2 text-black flex justify-between items-center">
+            <span>{allergy.code} - {allergy.description}</span>
+            <button onClick={() => handleRemoveAllergy(index)} className="text-red-500 ml-4">&times;</button>
           </div>
         ))}
       </div>
@@ -89,27 +114,20 @@ const PrescriptionPage: React.FC = () => {
       <ActionButton label="Diagnosis" onClick={openDiagnosisModal} />
       <div>
         {selectedDiagnosis.map((diagnosis, index) => (
-          <div key={index} className="p-2 border rounded mt-2 text-black">
-            {diagnosis.code} - {diagnosis.description}
+          <div key={index} className="p-2 border rounded mt-2 text-black flex justify-between items-center">
+            <span>{diagnosis.code} - {diagnosis.description}</span>
+            <button onClick={() => handleRemoveDiagnosis(index)} className="text-red-500 ml-4">&times;</button>
           </div>
         ))}
       </div>
 
       <IssuePrescriptionButton />
 
-      <Modal
+      <DrugModal
         isOpen={isDrugModalOpen}
         onClose={closeDrugModal}
-        title="Add Drugs"
-        onAdd={handleAdd}
-      >
-        <SearchBar
-          placeholder="Search for a drug..."
-          onSearch={handleSearch}
-          onSelect={handleSelect}
-          selectedItem={currentSelection} // Pass the selected item
-        />
-      </Modal>
+        onAdd={handleAddDrug}
+      />
 
       <Modal
         isOpen={isAllergyModalOpen}
@@ -121,7 +139,7 @@ const PrescriptionPage: React.FC = () => {
           placeholder="Search for an allergy..."
           onSearch={handleSearch}
           onSelect={handleSelect}
-          selectedItem={currentSelection} // Pass the selected item
+          selectedItem={currentSelection}
         />
       </Modal>
 
@@ -135,7 +153,7 @@ const PrescriptionPage: React.FC = () => {
           placeholder="Search for a diagnosis..."
           onSearch={handleSearch}
           onSelect={handleSelect}
-          selectedItem={currentSelection} // Pass the selected item
+          selectedItem={currentSelection}
         />
       </Modal>
     </div>

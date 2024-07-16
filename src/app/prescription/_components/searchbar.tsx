@@ -9,7 +9,7 @@ interface SearchBarProps {
   placeholder: string;
   onSearch: (query: string) => void;
   onSelect: (item: any) => void;
-  selectedItem: any; // Add selectedItem prop
+  selectedItem: any;
 }
 
 const mockResults = [
@@ -22,7 +22,7 @@ const mockResults = [
 
 const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onSearch, onSelect, selectedItem }) => {
   const [query, setQuery] = useState(selectedItem ? `${selectedItem.code} - ${selectedItem.description}` : '');
-  const [results, setResults] = useState(mockResults);
+  const [results, setResults] = useState<any[]>([]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
@@ -64,7 +64,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onSearch, onSelect, 
         className="mb-2"
       />
       {results.length > 0 && (
-        <div className="absolute top-full text-black left-0 w-full bg-white border border-gray-300 rounded text-black mt-1 z-10">
+        <div className="absolute top-full text-black left-0 w-full bg-white border border-gray-300 rounded mt-1 z-10">
           {results.map((result, index) => (
             <div
               key={index}

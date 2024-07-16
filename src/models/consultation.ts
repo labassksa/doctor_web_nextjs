@@ -1,29 +1,31 @@
-// models/Consultation.ts
 import { DoctorProfile } from "./doctorProfile";
 import { PatientProfile } from "./patientProfile";
 
 export enum ConsultationType {
-  Quick = "Quick",
-  Detailed = "Detailed",
+  Quick = "quick",
+  Psychiatric = "psychiatric",
+  Specialized = "specialized",
 }
 
 export enum ConsultationStatus {
+  Paid = "Paid",
+  Open = "Open",
+  Closed = "Closed",
   PendingPayment = "PendingPayment",
-  Completed = "Completed",
-  Cancelled = "Cancelled",
+  AfterPayment = "AfterPayment",
 }
 
 export class Consultation {
   constructor(
     public id: number,
     public createdAt: Date,
-    public patientJoinedAT: Date,
-    public doctorJoinedAT: Date,
+    public patientJoinedAT: Date | null,
+    public doctorJoinedAT: Date | null,
     public paidAT: Date,
     public closedAt: Date,
     public status: ConsultationStatus,
     public type: ConsultationType,
-    public patient: PatientProfile,
+    public patient: PatientProfile | null, // Allowing null here
     public doctor?: DoctorProfile | null, // Allowing null here
     public hasPrescription: boolean = false,
     public hasSOAP: boolean = false,

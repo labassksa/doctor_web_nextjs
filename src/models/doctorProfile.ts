@@ -1,15 +1,21 @@
-// models/DoctorProfile.ts
 import { Consultation } from './consultation';
-import  User  from './user';
+import User from './user';
 
 export class DoctorProfile {
-  constructor(
-    public id: number,
-    public specialty: string,
-    public medicalLicenseNumber: string,
-    public user: User,
-    public iban?: string,
-    public consultations?: Consultation[]
-  ) {}
-}
+  id: number;
+  specialty: string;
+  medicalLicenseNumber: string;
+  user: User;
+  iban?: string;
+  consultations?: Consultation[];
 
+  constructor({ id, specialty, medicalLicenseNumber, user, iban = "", consultations = [] }: 
+    { id: number; specialty: string; medicalLicenseNumber: string; user: User; iban?: string; consultations?: Consultation[] }) {
+    this.id = id;
+    this.specialty = specialty;
+    this.medicalLicenseNumber = medicalLicenseNumber;
+    this.user = user;
+    this.iban = iban;
+    this.consultations = consultations;
+  }
+}

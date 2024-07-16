@@ -14,7 +14,7 @@ const TabComponent: React.FC = () => {
   ];
 
   return (
-    <div className="flex justify-center p-4 text-black border-b">
+    <div className="flex justify-center p-4 text-black mb-14">
       <div className="flex space-x-8">
         {tabs.map((tab) => (
           <Link key={tab.name} href={tab.href} passHref>

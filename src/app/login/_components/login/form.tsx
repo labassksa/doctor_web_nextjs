@@ -40,9 +40,9 @@ const SimpleLoginForm = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen justify-center items-center">
+    <div className="flex flex-col  h-screen  justify-center">
       <form onSubmit={handleSubmit} className="text-right m-2" id="loginForm">
-        <label htmlFor="phoneNumber" className="block m-2">
+        <label htmlFor="phoneNumber" className="block m-2  text-xl">
           أدخل رقم الجوال
         </label>
         <input

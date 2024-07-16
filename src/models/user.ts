@@ -1,6 +1,6 @@
 // models/User.ts
 class User {
-  id: number;           // Added id property
+  id: number;
   firstName: string;
   lastName: string;
   nationalId: string;
@@ -10,17 +10,27 @@ class User {
   email: string | null;
   role: string;
 
-  constructor(
-    id: number = 0,     // Default id set to 0, consider using null or handling it based on your ID strategy
-    firstName: string = "",
-    lastName: string = "",
-    nationalId: string = "",
-    dateOfBirth: string = "",
-    gender: string = "",
-    phoneNumber: string = "",
-    email: string | null = null,
-    role: string = ""
-  ) {
+  constructor({
+    id = 0,
+    firstName = "",
+    lastName = "",
+    nationalId = "",
+    dateOfBirth = "",
+    gender = "",
+    phoneNumber = "",
+    email = null,
+    role = ""
+  }: {
+    id?: number;
+    firstName?: string;
+    lastName?: string;
+    nationalId?: string;
+    dateOfBirth?: string;
+    gender?: string;
+    phoneNumber?: string;
+    email?: string | null;
+    role?: string;
+  }) {
     this.id = id;
     this.firstName = firstName;
     this.lastName = lastName;
@@ -34,7 +44,7 @@ class User {
 
   // Method to validate the user info
   validate(): string | null {
-    if (!this.id) return "User ID is required.";              // Validation for user ID
+    if (!this.id) return "User ID is required.";
     if (!this.firstName.trim()) return "First name is required.";
     if (!this.lastName.trim()) return "Last name is required.";
     if (!this.nationalId.trim()) return "National ID is required.";

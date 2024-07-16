@@ -3,8 +3,11 @@ import React from "react";
 
 const PatientInfo: React.FC = () => {
   return (
-    <div className="p-4 border rounded-md mb-4 bg-white shadow-md flex justify-between items-center">
+    <div className="p-4 w-1/2 border rounded-md mb-4 bg-white shadow-md flex justify-between items-center">
       <div>
+        <h1  className="text-xl font-semibold text-gray-500">
+Patient Information
+        </h1>
         <h2 className="text-lg font-semibold">Ahmed Ali</h2>
         <p>Age: 26 Years</p>
         <p>Male</p>
