@@ -31,6 +31,15 @@ const patient2Gender = "Female";
 const patient2PhoneNumber = "987-654-3210";
 const patient2Email = "jane.smith@example.com";
 const patient2Role = "Patient";
+const patient3Id = 2;
+const patient3FirstName = "Saud"; // No first name for patientUser2
+const patient3LastName = "Rowaily";
+const patient3NationalId = "9876543210";
+const patient3DateOfBirth = "1992-02-02";
+const patient3Gender = "Female";
+const patient3PhoneNumber = "987-654-3210";
+const patient3Email = "jane.smith@example.com";
+const patient3Role = "Patient";
 
 // Named variables for doctorUser1
 const doctor1Id = 3;
@@ -78,6 +87,17 @@ const patientUser2 = new User({
   email: patient2Email,
   role: patient2Role,
 });
+const patientUser3 = new User({
+  id: patient3Id,
+  firstName: patient3FirstName,
+  lastName: patient3LastName,
+  nationalId: patient3NationalId,
+  dateOfBirth: patient3DateOfBirth,
+  gender: patient3Gender,
+  phoneNumber: patient3PhoneNumber,
+  email: patient3Email,
+  role: patient3Role,
+});
 
 const doctorUser1 = new User({
   id: doctor1Id,
@@ -110,6 +130,10 @@ const patientProfile1 = new PatientProfile({
 });
 const patientProfile2 = new PatientProfile({
   id: 2,
+  user: patientUser2,
+});
+const patientProfile3 = new PatientProfile({
+  id: 3,
   user: patientUser2,
 });
 
@@ -159,11 +183,26 @@ const consultation2 = new Consultation(
   true,
   true
 );
+const consultation3 = new Consultation(
+  3,
+  new Date("2023-07-04T10:22:00"),
+  new Date("2023-07-04T10:24:00"),
+  new Date("2023-07-04T10:28:00"),
+  new Date("2023-07-04T10:22:00"),
+  new Date(),
+  ConsultationStatus.Open,
+  ConsultationType.Quick,
+  patientProfile2,
+  doctorProfile1,
+  true,
+  true,
+  true
+);
 
 // Convert class instances to plain objects
 const plainConsultation1 = JSON.parse(JSON.stringify(consultation1));
 const plainConsultation2 = JSON.parse(JSON.stringify(consultation2));
-const plainConsultation3 = JSON.parse(JSON.stringify(consultation2));
+const plainConsultation3 = JSON.parse(JSON.stringify(consultation3));
 const plainConsultation4 = JSON.parse(JSON.stringify(consultation2));
 
 const FeedPage = () => {
@@ -173,11 +212,7 @@ const FeedPage = () => {
     plainConsultation2,
     plainConsultation3,
     plainConsultation4,
-    plainConsultation4,
-    plainConsultation4,
-    plainConsultation4,
-    plainConsultation4,
-    plainConsultation4,
+
   ];
 
   return (

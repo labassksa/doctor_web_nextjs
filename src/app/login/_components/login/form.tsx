@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { login } from "../../../../controllers/login.Controller";
+import { loginDoctor } from "../../_controllers/sendOTP.Controller";
 import { convertArabicToEnglishNumbers } from "../../../../utils/arabicToenglish";
 
 const SimpleLoginForm = () => {
@@ -29,20 +29,26 @@ const SimpleLoginForm = () => {
     const cleanedPhoneNumber = phoneNumber.startsWith("0")
       ? phoneNumber.slice(1)
       : phoneNumber;
-    const result = await login(cleanedPhoneNumber);
-
-    setIsLoading(false); // Stop loading after API response
-    if (result.success) {
-      router.push(`/otp?phoneNumber=%2B966${cleanedPhoneNumber}`);
-    } else {
-      setErrorMessage(result.message);
+    try {
+      const result = await loginDoctor(cleanedPhoneNumber);
+      setIsLoading(false); // Stop loading after API response
+      if (result?.success) {
+        console.log(`the result from login is ${result}`);
+        router.push(`/otp?phoneNumber=%2B966${cleanedPhoneNumber}`);
+      } else {
+        setErrorMessage(result?.message || "حدث خطأ ، حاول مرة أخرى");
+      }
+    } catch (error) {
+      setIsLoading(false); // Stop loading after error
+      setErrorMessage("حدث خطأ ، حاول مرة أخرى");
+      console.error("Login error:", error);
     }
   };
 
   return (
-    <div className="flex flex-col  h-screen  justify-center">
+    <div className="flex flex-col h-screen justify-between">
       <form onSubmit={handleSubmit} className="text-right m-2" id="loginForm">
-        <label htmlFor="phoneNumber" className="block m-2  text-xl">
+        <label htmlFor="phoneNumber" className="block m-2">
           أدخل رقم الجوال
         </label>
         <input

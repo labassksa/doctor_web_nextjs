@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Consultation,
   ConsultationStatus,
@@ -10,21 +11,24 @@ interface FeedConsultationsProps {
   consultations: Consultation[];
 }
 
-const FeedConsultations: React.FC<FeedConsultationsProps> = ({
-  consultations,
-}) => {
+const FeedConsultations: React.FC<FeedConsultationsProps> = ({ consultations }) => {
   const [isClient, setIsClient] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     setIsClient(true);
   }, []);
 
+  const handleChatClick = (consultationId: number) => {
+    router.push(`/chat/${consultationId}`);
+  };
+
   return (
-    <div className=" bg-gray-100 h-screen">
+    <div className="bg-gray-100 h-screen">
       {consultations.map((consultation) => (
         <div
           key={consultation.id}
-          className="p-4 border rounded-md bg-white shadow-md"
+          className="p-4 border rounded-md bg-white shadow-md cursor-pointer"
         >
           <div className="flex justify-between">
             <div>
@@ -94,7 +98,10 @@ const FeedConsultations: React.FC<FeedConsultationsProps> = ({
               </button>
             )}
             {consultation.status === ConsultationStatus.Open && (
-              <button className="px-4 py-2 bg-blue-500 text-white rounded-full w-full">
+              <button
+                className="px-4 py-2 bg-blue-500 text-white rounded-full w-full"
+                onClick={() => handleChatClick(consultation.id)}
+              >
                 Chat
               </button>
             )}

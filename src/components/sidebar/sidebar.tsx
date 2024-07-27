@@ -2,17 +2,23 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Menu from "./menu";
 import { ArrowRightOnRectangleIcon } from "@heroicons/react/24/solid";
 import { BarChartOutlined, MenuSharp } from "@mui/icons-material";
 
 const Sidebar: React.FC = () => {
   const pathname = usePathname();
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
+  };
+
+  const handleSignOut = () => {
+    localStorage.removeItem("labass_token");
+    router.push("/login");
   };
 
   return (
@@ -57,7 +63,10 @@ const Sidebar: React.FC = () => {
             <Menu currentPath={pathname} />
           </div>
           <div className="p-4">
-            <button className="w-full py-2.5 px-4 border border-blue-500 text-blue-500 rounded transition duration-200 hover:bg-blue-500 hover:text-white flex items-center justify-center">
+            <button
+              onClick={handleSignOut}
+              className="w-full py-2.5 px-4 border border-blue-500 text-blue-500 rounded transition duration-200 hover:bg-blue-500 hover:text-white flex items-center justify-center"
+            >
               <ArrowRightOnRectangleIcon className="h-6 w-6 mr-2" />
               Sign out
             </button>

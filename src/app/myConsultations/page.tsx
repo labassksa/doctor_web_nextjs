@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import MyConsultations from "./_components/MyConsultationCards"; // Adjust the path as needed
 import {
   Consultation,
@@ -8,12 +8,19 @@ import {
 import { PatientProfile } from "../../models/patientProfile";
 import { DoctorProfile } from "../../models/doctorProfile";
 import User from "../../models/user";
-import ChatMainContents from "../chat/_components/chatMessagesarea";
-import FullScreenButtons from "./_components/actions";
+import ChatMainContents from "../chat/_components/chatMainContent";
+import FullScreenButtons from "../../components/common/actions";
 import Sidebar from "../../components/sidebar/sidebar";
+import useSocket from "../../socket.io/socket.io.initialization"; // Adjust the path as needed
 
-
-
+interface Message {
+  id: number;
+  message: string;
+  senderId: number; // example senderId
+  consultationId: number; // example consultationId
+  isSent: boolean;
+  read: boolean;
+}
 
 // Named variables for patientUser1
 const patient1Id = 1;
@@ -171,35 +178,82 @@ const plainConsultation2 = JSON.parse(JSON.stringify(consultation2));
 const plainConsultation3 = JSON.parse(JSON.stringify(consultation2));
 const plainConsultation4 = JSON.parse(JSON.stringify(consultation2));
 
-const MyConsultationsPage = () => {
+const MyConsultationsPage: React.FC = () => {
+  const [messages, setMessages] = useState<Message[]>([]);
+  const socket = useSocket("http://localhost:3000"); // Replace with your backend URL
+
+  // useEffect(() => {
+  //   if (socket) {
+  //     socket.on("receiveMessage", (newMessage: Message) => {
+  //       setMessages((prevMessages) => [...prevMessages, newMessage]);
+  //     });
+
+  //     return () => {
+  //       socket.off("receiveMessage");
+  //     };
+  //   }
+  // }, [socket]);
+
+  const handleSendMessage = (messageText: string) => {
+    console.log("Sending message:", messageText);
+    const newMessage: Message = {
+      id: messages.length + 1,
+      message: messageText,
+      senderId: 1, // example senderId
+      consultationId: 3, // example consultationId
+      isSent: true,
+      read: false,
+    };
+    setMessages((prevMessages) => [...prevMessages, newMessage]);
+
+    // // Emit the message to the socket
+    // if (socket) {
+    //   socket.emit("sendMessage", {
+    //     room: "room1", // Update this if dynamic room management is needed
+    //     message: messageText,
+    //     consultationId: 3, // Update this if dynamic consultation management is needed
+    //     senderId: 1, // Example sender ID, change as necessary
+    //   });
+    // }
+
+    // Simulate backend confirmation
+    setTimeout(() => {
+      setMessages((prevMessages) =>
+        prevMessages.map((msg) =>
+          msg.id === newMessage.id ? { ...msg, status: "sent" } : msg
+        )
+      );
+    }, 2000);
+  };
+
   // Sample consultations data
   const consultations = [
     plainConsultation1,
     plainConsultation2,
-    plainConsultation2,
-    plainConsultation2,
-    plainConsultation2,
-    plainConsultation2,
-    plainConsultation2,
-    plainConsultation2,
-    plainConsultation2,
-    plainConsultation2,
+    plainConsultation3,
+    plainConsultation4,
   ];
 
   return (
-    <div className="flex h-screen overflow-hidden ">
+    <div className="flex h-screen overflow-hidden">
       <Sidebar />
 
-      <main className="flex flex-col w-full p-4 ml-64">
-        <h1 className="text-2xl text-black font-semibold mb-4 ">
+      <main className="flex flex-col w-full p-4">
+        <h1 className="text-2xl text-black font-semibold mb-4">
           My Consultations
         </h1>
         <div className="flex flex-row flex-grow h-full">
-          <div className="w-1/3  text-black overflow-y-auto">
+          <div className="w-1/3 text-black overflow-y-auto">
             <MyConsultations consultations={consultations} />
           </div>
-          <div className="w-1/2 h-full text-black ">
-            <ChatMainContents />
+          <div className="flex flex-col w-1/2 h-full text-black">
+            <div className="bg-green-100">Header</div>
+            <ChatMainContents
+              consultationId={3} // Update this if dynamic consultation management is needed
+              showActions={false}
+              messages={messages}
+              handleSendMessage={handleSendMessage}
+            />
           </div>
           <div className="w-1/6 h-full">
             <FullScreenButtons />
