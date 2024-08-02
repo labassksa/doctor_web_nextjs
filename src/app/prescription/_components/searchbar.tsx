@@ -1,81 +1,64 @@
 // components/SearchBar.tsx
-"use client";
-import React, { useState } from "react";
-import TextField from '@mui/material/TextField';
-import InputAdornment from '@mui/material/InputAdornment';
-import SearchIcon from '@mui/icons-material/Search';
 
+"use client";
+
+import React, { useState } from "react";
+import { InstantSearch, SearchBox, Hits, Configure } from "react-instantsearch";
+import { searchClient } from "../../../lib/algoliaClient";
+import { Hit } from "./Hit";
+
+// Define the interface for SearchBarProps
 interface SearchBarProps {
   placeholder: string;
-  onSearch: (query: string) => void;
-  onSelect: (item: any) => void;
-  selectedItem: any;
+  onSelect: (item: DrugHit) => void; // Use the custom DrugHit type
+  selectedItem: DrugHit | null;
+  indexName: string; // Add indexName as a prop
 }
+// Define the DrugHit interface for Algolia search results
+interface DrugHit {
+  objectID: string;
+  code: string;
+  description: string;
+  form?: string;
+  ingredients?: string;
+  strength?: string;
+}
+interface DrugItem {
+  objectID: string;
+  code: string;
+  description: string;
+  form?: string;
+  ingredients?: string;
+  strength?: string;
+}
+const SearchBar: React.FC<SearchBarProps> = ({
+  placeholder,
+  onSelect,
+  selectedItem,
+  indexName, // Destructure indexName
+}) => {
+  const [query, setQuery] = useState(
+    selectedItem ? `${selectedItem.code} - ${selectedItem.description}` : ""
+  );
 
-const mockResults = [
-  { code: 'A00', description: 'Cholera' },
-  { code: 'A01', description: 'Typhoid and paratyphoid fevers' },
-  { code: 'A02', description: 'Other salmonella infections' },
-  { code: 'A03', description: 'Shigellosis' },
-  // Add more mock results as needed
-];
-
-const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onSearch, onSelect, selectedItem }) => {
-  const [query, setQuery] = useState(selectedItem ? `${selectedItem.code} - ${selectedItem.description}` : '');
-  const [results, setResults] = useState<any[]>([]);
-
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    setQuery(value);
-    onSearch(value);
-
-    // Filter mock results based on query
-    if (value) {
-      setResults(mockResults.filter(result => 
-        result.code.toLowerCase().includes(value.toLowerCase()) ||
-        result.description.toLowerCase().includes(value.toLowerCase())
-      ));
-    } else {
-      setResults([]);
-    }
-  };
-
-  const handleSelect = (item: any) => {
+  const handleSelect = (item: DrugHit) => {
     setQuery(`${item.code} - ${item.description}`);
     onSelect(item);
-    setResults([]);
   };
 
   return (
     <div className="relative w-full mb-4 text-black">
-      <TextField
-        fullWidth
-        variant="outlined"
-        placeholder={placeholder}
-        value={query}
-        onChange={handleInputChange}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <SearchIcon />
-            </InputAdornment>
-          ),
-        }}
-        className="mb-2"
-      />
-      {results.length > 0 && (
-        <div className="absolute top-full text-black left-0 w-full bg-white border border-gray-300 rounded mt-1 z-10">
-          {results.map((result, index) => (
-            <div
-              key={index}
-              onClick={() => handleSelect(result)}
-              className="p-2 hover:bg-gray-100 cursor-pointer text-black"
-            >
-              <div>{result.code} - {result.description}</div>
-            </div>
-          ))}
-        </div>
-      )}
+      <InstantSearch searchClient={searchClient} indexName={indexName}>
+        {" "}
+        {/* Use the indexName prop */}
+        <Configure hitsPerPage={3} />
+        <SearchBox className="ais-SearchBox" translations={{}} />
+        <Hits<DrugHit> // Specify the type of hits being rendered
+          hitComponent={({ hit }) => (
+            <Hit hit={hit} onSelect={handleSelect} /> // Pass onSelect to Hit
+          )}
+        />
+      </InstantSearch>
     </div>
   );
 };
