@@ -10,19 +10,51 @@ import IssuePrescriptionButton from "./_components/IssuePrescriptionButton";
 import DrugModal from "./_components/DrugModal";
 import Modal from "./_components/Modal";
 import SearchBar from "./_components/searchbar"; // Correct import casing
+import { BaseItem } from "@algolia/autocomplete-core";
 
 const PrescriptionPage: React.FC = () => {
   const [isDrugModalOpen, setIsDrugModalOpen] = useState(false);
   const [isAllergyModalOpen, setIsAllergyModalOpen] = useState(false);
   const [isDiagnosisModalOpen, setIsDiagnosisModalOpen] = useState(false);
+
   // Define the DrugHit interface for Algolia search results
-  interface DrugHit {
+  interface DrugHit extends BaseItem {
     objectID: string;
-    code: string;
-    description: string;
-    form?: string;
-    ingredients?: string;
-    strength?: string;
+    RegisterNumber: string;
+    OldRegisterNumber: string;
+    ProductType: string;
+    DrugType: string;
+    SubType: string;
+    "Scientific Name": string; // Property with space
+    "Trade Name": string;
+    Strength: string;
+    StrengthUnit: string;
+    PharmaceuticalForm: string;
+    AdministrationRoute: string;
+    AtcCode1: string;
+    AtcCode2: string;
+    Size: string;
+    SizeUnit: string;
+    PackageTypes: string;
+    PackageSize: string;
+    LegalStatus: string;
+    ProductControl: string;
+    DistributeArea: string;
+    PublicPrice: string;
+    ShelfLife: string;
+    StorageConditions: string;
+    StorageConditionArabic: string;
+    MarketingCompany: string;
+    MarketingCountry: string;
+    ManufactureName: string;
+    ManufactureCountry: string;
+    SecondaryPackageManufacture: string;
+    MainAgent: string;
+    SecondAgent: string;
+    ThirdAgent: string;
+    DescriptionCode: string;
+    AuthorizationStatus: string;
+    [key: string]: any; // Index signature to handle any additional fields
   }
   const [selectedDrugs, setSelectedDrugs] = useState<DrugHit[]>([]); // Correctly type state
   const [selectedAllergies, setSelectedAllergies] = useState<DrugHit[]>([]); // Assuming similar type

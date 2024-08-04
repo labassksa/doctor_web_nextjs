@@ -72,7 +72,7 @@ const DrugModal: React.FC<DrugModalProps> = ({ isOpen, onClose, onAdd }) => {
     setCurrentSelection(item);
     setPharmaceuticalForm(item.PharmaceuticalForm || "");
     setActiveIngredients(item["Scientific Name"] || "");
-    setStrength(item.Strength || "");
+    setStrength(item["Trade Name"] || "");
   };
 
   const handleAdd = () => {
@@ -107,9 +107,9 @@ const DrugModal: React.FC<DrugModalProps> = ({ isOpen, onClose, onAdd }) => {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Add Drug" onAdd={handleAdd}>
-      {/* Use Autocomplete here */}
-      <SearchBar
+    <div>
+ {/* Use Autocomplete here */}
+ <SearchBar
         placeholder="Search for a drug..."
         onSelect={handleSelect}
         selectedItem={currentSelection}
@@ -273,8 +273,9 @@ const DrugModal: React.FC<DrugModalProps> = ({ isOpen, onClose, onAdd }) => {
           </label>
         </div>
       </div>
-    </Modal>
-  );
+
+    </div>
+         );
 };
 
 export default DrugModal;
