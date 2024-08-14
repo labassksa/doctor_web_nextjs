@@ -2,57 +2,17 @@
 
 import React, { useEffect, useRef } from "react";
 import { autocomplete, AutocompleteOptions } from "@algolia/autocomplete-js";
+
 import { BaseItem } from "@algolia/autocomplete-core";
 import "@algolia/autocomplete-theme-classic";
 import { searchClient } from "../../../lib/algoliaClient";
-import { InstantSearch, SearchBox } from "react-instantsearch-hooks-web";
-
+import { DrugHit } from "../../../utils/types/drugHit";
 // Define the interface for SearchBarProps
 interface SearchBarProps {
   placeholder: string;
   onSelect: (item: DrugHit) => void; // Use the custom DrugHit type
   selectedItem: DrugHit | null;
   indexName: string; // Add indexName as a prop
-}
-
-// Define the DrugHit interface for Algolia search results
-interface DrugHit extends BaseItem {
-  objectID: string;
-  RegisterNumber: string;
-  OldRegisterNumber: string;
-  ProductType: string;
-  DrugType: string;
-  SubType: string;
-  "Scientific Name": string; // Property with space
-  "Trade Name": string;
-  Strength: string;
-  StrengthUnit: string;
-  PharmaceuticalForm: string;
-  AdministrationRoute: string;
-  AtcCode1: string;
-  AtcCode2: string;
-  Size: string;
-  SizeUnit: string;
-  PackageTypes: string;
-  PackageSize: string;
-  LegalStatus: string;
-  ProductControl: string;
-  DistributeArea: string;
-  PublicPrice: string;
-  ShelfLife: string;
-  StorageConditions: string;
-  StorageConditionArabic: string;
-  MarketingCompany: string;
-  MarketingCountry: string;
-  ManufactureName: string;
-  ManufactureCountry: string;
-  SecondaryPackageManufacture: string;
-  MainAgent: string;
-  SecondAgent: string;
-  ThirdAgent: string;
-  DescriptionCode: string;
-  AuthorizationStatus: string;
-  [key: string]: any; // Index signature to handle any additional fields
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({

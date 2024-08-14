@@ -5,13 +5,12 @@ import Modal from "./Modal";
 import SearchBar from "./searchbar";
 import { BaseItem } from "@algolia/autocomplete-core";
 
-// Define the DrugModalProps interface
 interface DrugModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAdd: (drug: DrugHit) => void; // Use the custom DrugHit type
+  onAdd: (drug: DrugHit) => void;
 }
-// Define the DrugHit interface for Algolia search results
+
 interface DrugHit extends BaseItem {
   objectID: string;
   RegisterNumber: string;
@@ -19,7 +18,7 @@ interface DrugHit extends BaseItem {
   ProductType: string;
   DrugType: string;
   SubType: string;
-  "Scientific Name": string; // Property with space
+  "Scientific Name": string;
   "Trade Name": string;
   Strength: string;
   StrengthUnit: string;
@@ -48,7 +47,7 @@ interface DrugHit extends BaseItem {
   ThirdAgent: string;
   DescriptionCode: string;
   AuthorizationStatus: string;
-  [key: string]: any; // Index signature to handle any additional fields
+  [key: string]: any;
 }
 
 const DrugModal: React.FC<DrugModalProps> = ({ isOpen, onClose, onAdd }) => {
@@ -108,12 +107,11 @@ const DrugModal: React.FC<DrugModalProps> = ({ isOpen, onClose, onAdd }) => {
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Add Drug" onAdd={handleAdd}>
-      {/* Use Autocomplete here */}
       <SearchBar
         placeholder="Search for a drug..."
         onSelect={handleSelect}
         selectedItem={currentSelection}
-        indexName="drugs" // Pass the index name here
+        indexName="drugs"
       />
       <div className="mt-4 space-y-4">
         <div>
@@ -137,7 +135,7 @@ const DrugModal: React.FC<DrugModalProps> = ({ isOpen, onClose, onAdd }) => {
             readOnly
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm bg-gray-100 sm:text-sm"
           />
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-gray-700 mt-4">
             Active Ingredients
           </label>
           <input
@@ -147,6 +145,7 @@ const DrugModal: React.FC<DrugModalProps> = ({ isOpen, onClose, onAdd }) => {
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm bg-gray-100 sm:text-sm"
           />
         </div>
+        {/* Additional fields */}
         <div>
           <label className="block text-sm font-medium text-gray-700">
             Dose *

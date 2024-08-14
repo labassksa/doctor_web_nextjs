@@ -1,4 +1,3 @@
-// components/Modal.tsx
 "use client";
 import React from "react";
 
@@ -6,8 +5,8 @@ interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   title: string;
-  children: React.ReactNode; // Accept children
-  onAdd: () => void; // Add this prop for the add button
+  children: React.ReactNode;
+  onAdd: () => void;
 }
 
 const Modal: React.FC<ModalProps> = ({
@@ -20,12 +19,11 @@ const Modal: React.FC<ModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className=" inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50">
-      {/* Ensure the modal container is scrollable */}
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white p-6 rounded sm:rounded-lg shadow-lg w-full sm:max-w-3xl h-full sm:h-auto overflow-y-auto sm:max-h-[90vh] mx-2 sm:mx-4">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg sm:text-xl font-semibold">{title}</h2>
-          <button onClick={onClose} className="text-gray-500">
+          <button onClick={onClose} className="text-gray-500 text-2xl">
             &times;
           </button>
         </div>
