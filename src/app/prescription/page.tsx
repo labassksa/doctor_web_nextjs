@@ -1,4 +1,3 @@
-// PrescriptionPage.tsx
 "use client";
 
 import React, { useState } from "react";
@@ -9,103 +8,43 @@ import ActionButton from "./_components/ActionButton";
 import IssuePrescriptionButton from "./_components/IssuePrescriptionButton";
 import DrugModal from "./_components/DrugModal";
 import Modal from "./_components/Modal";
-import SearchBar from "./_components/searchbar"; // Correct import casing
-import { BaseItem } from "@algolia/autocomplete-core";
-
+import SearchBar from "./_components/searchbar";
+import { DrugHit } from "../../utils/types/drugHit";
 const PrescriptionPage: React.FC = () => {
-  const [isDrugModalOpen, setIsDrugModalOpen] = useState(false);
-  const [isAllergyModalOpen, setIsAllergyModalOpen] = useState(false);
-  const [isDiagnosisModalOpen, setIsDiagnosisModalOpen] = useState(false);
+  const [openModal, setOpenModal] = useState<string | null>(null);
 
-  // Define the DrugHit interface for Algolia search results
-  interface DrugHit extends BaseItem {
-    objectID: string;
-    RegisterNumber: string;
-    OldRegisterNumber: string;
-    ProductType: string;
-    DrugType: string;
-    SubType: string;
-    "Scientific Name": string; // Property with space
-    "Trade Name": string;
-    Strength: string;
-    StrengthUnit: string;
-    PharmaceuticalForm: string;
-    AdministrationRoute: string;
-    AtcCode1: string;
-    AtcCode2: string;
-    Size: string;
-    SizeUnit: string;
-    PackageTypes: string;
-    PackageSize: string;
-    LegalStatus: string;
-    ProductControl: string;
-    DistributeArea: string;
-    PublicPrice: string;
-    ShelfLife: string;
-    StorageConditions: string;
-    StorageConditionArabic: string;
-    MarketingCompany: string;
-    MarketingCountry: string;
-    ManufactureName: string;
-    ManufactureCountry: string;
-    SecondaryPackageManufacture: string;
-    MainAgent: string;
-    SecondAgent: string;
-    ThirdAgent: string;
-    DescriptionCode: string;
-    AuthorizationStatus: string;
-    [key: string]: any; // Index signature to handle any additional fields
-  }
-  const [selectedDrugs, setSelectedDrugs] = useState<DrugHit[]>([]); // Correctly type state
-  const [selectedAllergies, setSelectedAllergies] = useState<DrugHit[]>([]); // Assuming similar type
-  const [selectedDiagnosis, setSelectedDiagnosis] = useState<DrugHit[]>([]); // Assuming similar type
-
+  const [selectedDrugs, setSelectedDrugs] = useState<DrugHit[]>([]);
+  const [selectedAllergies, setSelectedAllergies] = useState<DrugHit[]>([]);
+  const [selectedDiagnosis, setSelectedDiagnosis] = useState<DrugHit[]>([]);
   const [currentSelection, setCurrentSelection] = useState<DrugHit | null>(
     null
-  ); // Correctly type state
+  );
 
-  const openDrugModal = () => {
-    setCurrentSelection(null);
-    setIsDrugModalOpen(true);
-  };
+  const closeAllModals = () => setOpenModal(null);
 
-  const closeDrugModal = () => setIsDrugModalOpen(false);
+  const openDrugModal = () => setOpenModal("drug");
+  const openAllergyModal = () => setOpenModal("allergy");
+  const openDiagnosisModal = () => setOpenModal("diagnosis");
 
-  const openAllergyModal = () => {
-    setCurrentSelection(null);
-    setIsAllergyModalOpen(true);
-  };
-
-  const closeAllergyModal = () => setIsAllergyModalOpen(false);
-
-  const openDiagnosisModal = () => {
-    setCurrentSelection(null);
-    setIsDiagnosisModalOpen(true);
-  };
-
-  const closeDiagnosisModal = () => setIsDiagnosisModalOpen(false);
-
-  const handleSelect = (item: DrugHit) => {
-    setCurrentSelection(item);
-  };
+  const handleSelect = (item: DrugHit) => setCurrentSelection(item);
 
   const handleAddDrug = (drug: DrugHit) => {
     setSelectedDrugs([...selectedDrugs, drug]);
-    closeDrugModal();
+    closeAllModals();
   };
 
   const handleAdd = () => {
     if (currentSelection) {
-      if (isDrugModalOpen) {
+      if (openModal === "drug") {
         handleAddDrug(currentSelection);
-      } else if (isAllergyModalOpen) {
+      } else if (openModal === "allergy") {
         setSelectedAllergies([...selectedAllergies, currentSelection]);
-        closeAllergyModal();
-      } else if (isDiagnosisModalOpen) {
+        closeAllModals();
+      } else if (openModal === "diagnosis") {
         setSelectedDiagnosis([...selectedDiagnosis, currentSelection]);
-        closeDiagnosisModal();
+        closeAllModals();
       }
-      setCurrentSelection(null); // Clear the current selection
+      setCurrentSelection(null);
     }
   };
 
@@ -141,7 +80,7 @@ const PrescriptionPage: React.FC = () => {
             className="p-2 border rounded mt-2 text-black flex justify-between items-center"
           >
             <span>
-              {drug.code} - {drug.description}
+              {drug.TradeName} - {drug.Strength} {drug.StrengthUnit}
             </span>
             <button
               onClick={() => handleRemoveDrug(index)}
@@ -161,7 +100,7 @@ const PrescriptionPage: React.FC = () => {
             className="p-2 border rounded mt-2 text-black flex justify-between items-center"
           >
             <span>
-              {allergy.code} - {allergy.description}
+              {allergy.TradeName} - {allergy.Strength} {allergy.StrengthUnit}
             </span>
             <button
               onClick={() => handleRemoveAllergy(index)}
@@ -181,7 +120,8 @@ const PrescriptionPage: React.FC = () => {
             className="p-2 border rounded mt-2 text-black flex justify-between items-center"
           >
             <span>
-              {diagnosis.code} - {diagnosis.description}
+              {diagnosis.TradeName} - {diagnosis.Strength}{" "}
+              {diagnosis.StrengthUnit}
             </span>
             <button
               onClick={() => handleRemoveDiagnosis(index)}
@@ -196,14 +136,14 @@ const PrescriptionPage: React.FC = () => {
       <IssuePrescriptionButton />
 
       <DrugModal
-        isOpen={isDrugModalOpen}
-        onClose={closeDrugModal}
+        isOpen={openModal === "drug"}
+        onClose={closeAllModals}
         onAdd={handleAddDrug}
       />
 
       <Modal
-        isOpen={isAllergyModalOpen}
-        onClose={closeAllergyModal}
+        isOpen={openModal === "allergy"}
+        onClose={closeAllModals}
         title="Add Allergies"
         onAdd={handleAdd}
       >
@@ -211,13 +151,13 @@ const PrescriptionPage: React.FC = () => {
           placeholder="Search for an allergy..."
           onSelect={handleSelect}
           selectedItem={currentSelection}
-          indexName="allergies" // Specify the correct index name
+          indexName="allergies"
         />
       </Modal>
 
       <Modal
-        isOpen={isDiagnosisModalOpen}
-        onClose={closeDiagnosisModal}
+        isOpen={openModal === "diagnosis"}
+        onClose={closeAllModals}
         title="Add Diagnosis"
         onAdd={handleAdd}
       >
@@ -225,7 +165,7 @@ const PrescriptionPage: React.FC = () => {
           placeholder="Search for a diagnosis..."
           onSelect={handleSelect}
           selectedItem={currentSelection}
-          indexName="diagnosis" // Specify the correct index name
+          indexName="diagnosis"
         />
       </Modal>
     </div>
