@@ -51,7 +51,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
             },
             getItemInputValue({ item }) {
               if (isDrugHit(item)) {
-                return `${item["Scientific Name"]} - ${item["Trade Name"]}`;
+                return ` ${item["Scientific Name"]} - ${item["Trade Name"]}`;
               } else if (isDiagnosisHit(item)) {
                 return item.ascii_desc;
               }
