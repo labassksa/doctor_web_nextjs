@@ -2,17 +2,18 @@
 
 import React, { useEffect, useRef } from "react";
 import { autocomplete, AutocompleteOptions } from "@algolia/autocomplete-js";
-
-import { BaseItem } from "@algolia/autocomplete-core";
-import "@algolia/autocomplete-theme-classic";
-import { searchClient } from "../../../lib/algoliaClient";
 import { DrugHit } from "../../../utils/types/drugHit";
-// Define the interface for SearchBarProps
+import { DiagnosisHit } from "../../../utils/types/diagnosis";
+import { searchClient } from "../../../lib/algoliaClient";
+import "@algolia/autocomplete-theme-classic";
+
+type SearchItem = DrugHit | DiagnosisHit;
+
 interface SearchBarProps {
   placeholder: string;
-  onSelect: (item: DrugHit) => void; // Use the custom DrugHit type
-  selectedItem: DrugHit | null;
-  indexName: string; // Add indexName as a prop
+  onSelect: (item: SearchItem) => void;
+  selectedItem: SearchItem | null;
+  indexName: string;
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({
@@ -24,19 +25,19 @@ const SearchBar: React.FC<SearchBarProps> = ({
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (!containerRef.current) {
-      return;
-    }
+    if (!containerRef.current) return;
 
-    // Initialize Autocomplete
-    const autocompleteInstance = autocomplete<DrugHit>({
+    const autocompleteInstance = autocomplete<SearchItem>({
       container: containerRef.current,
-      placeholder: placeholder,
+      placeholder,
       openOnFocus: true,
       initialState: {
-        query: selectedItem
-          ? ` ${selectedItem["Scientific Name"]} -  ${selectedItem["Trade Name"]}`
-          : "",
+        query:
+          selectedItem && isDrugHit(selectedItem)
+            ? `${selectedItem["Scientific Name"]} - ${selectedItem["Trade Name"]}`
+            : selectedItem && isDiagnosisHit(selectedItem)
+            ? `${selectedItem.ascii_desc}`
+            : "",
       },
       getSources({ query }) {
         return [
@@ -45,44 +46,59 @@ const SearchBar: React.FC<SearchBarProps> = ({
             getItems() {
               return searchClient
                 .initIndex(indexName)
-                .search<DrugHit>(query)
+                .search<SearchItem>(query)
                 .then(({ hits }) => hits);
             },
             getItemInputValue({ item }) {
-              return `${item["Scientific Name"]} - ${item["Trade Name"]}`;
+              if (isDrugHit(item)) {
+                return `${item["Scientific Name"]} - ${item["Trade Name"]}`;
+              } else if (isDiagnosisHit(item)) {
+                return item.ascii_desc;
+              }
+              return "nothing";
             },
             templates: {
               item({ item }) {
-                return `
-                      ${item["Scientific Name"]} - ${item["Trade Name"]}
-                `;
+                if (isDrugHit(item)) {
+                  return `${item["Scientific Name"]} - ${item["Trade Name"]}`;
+                } else if (isDiagnosisHit(item)) {
+                  return `${item.ascii_desc} (${item.ascii_short_desc})`;
+                }
+                return "";
               },
             },
             onSelect({ item, setQuery }) {
-              const selectedValue = `  ${item["Scientific Name"]} - ${item["Trade Name"]}`;
-              setQuery(selectedValue);
-              console.log(
-                ` Scientific Name: ${item["Scientific Name"]} - Trade Name: ${item["Trade Name"]}`
-              );
-              onSelect(item);
+              if (isDrugHit(item)) {
+                const selectedValue = `${item["Scientific Name"]} - ${item["Trade Name"]}`;
+                setQuery(selectedValue);
+              } else if (isDiagnosisHit(item)) {
+                const selectedValue = item.ascii_desc;
+                setQuery(selectedValue);
+              }
+              onSelect(item); // This should correctly pass the item to the parent
             },
           },
         ];
       },
-    } as AutocompleteOptions<DrugHit>);
+    } as AutocompleteOptions<SearchItem>);
 
-    return () => {
-      // Cleanup autocomplete instance on component unmount
-      autocompleteInstance.destroy();
-    };
+    return () => autocompleteInstance.destroy();
   }, [indexName, onSelect, placeholder, selectedItem]);
 
   return (
-    <div className="relative z-50 w-full mb-4  text-black">
+    <div className="relative z-50 w-full mb-4 text-black">
       <div ref={containerRef}></div>
-      {/* Autocomplete container */}
     </div>
   );
+};
+
+// Type guards
+const isDrugHit = (item: SearchItem): item is DrugHit => {
+  return (item as DrugHit).RegisterNumber !== undefined;
+};
+
+const isDiagnosisHit = (item: SearchItem): item is DiagnosisHit => {
+  return (item as DiagnosisHit).ascii_desc !== undefined;
 };
 
 export default SearchBar;
