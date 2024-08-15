@@ -1,13 +1,14 @@
-// components/DiagnosisModal.tsx
 "use client";
+
 import React, { useState } from "react";
 import Modal from "./Modal";
 import SearchBar from "./searchbar";
+import { DiagnosisHit } from "../../../utils/types/diagnosis";
 
 interface DiagnosisModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAdd: (diagnosis: any) => void; // Callback to handle adding a diagnosis
+  onAdd: (diagnosis: DiagnosisHit) => void;
 }
 
 const DiagnosisModal: React.FC<DiagnosisModalProps> = ({
@@ -15,13 +16,12 @@ const DiagnosisModal: React.FC<DiagnosisModalProps> = ({
   onClose,
   onAdd,
 }) => {
-  const [currentSelection, setCurrentSelection] = useState<any>(null);
+  const [currentSelection, setCurrentSelection] = useState<DiagnosisHit | null>(
+    null
+  );
 
-  const handleSearch = (query: string) => {
-    console.log("Search query:", query);
-  };
-
-  const handleSelect = (item: any) => {
+  const handleSelect = (item: DiagnosisHit) => {
+    console.log("Selected item:", item);
     setCurrentSelection(item);
   };
 
@@ -40,11 +40,22 @@ const DiagnosisModal: React.FC<DiagnosisModalProps> = ({
       onAdd={handleAdd}
     >
       <SearchBar
-        placeholder="Search for a drug..."
-        onSelect={handleSelect}
+        placeholder="Search for a diagnosis..."
+        onSelect={(item) => {
+          if ("ascii_desc" in item) {
+            handleSelect(item as DiagnosisHit);
+          }
+        }}
         selectedItem={currentSelection}
-        indexName="diagnosis" // Pass the index name here
+        indexName="diagnosis"
       />
+      {/* Render the selected item */}
+      {currentSelection && (
+        <div className="mt-2 text-gray-700">
+          Selected: {currentSelection.ascii_desc} (
+          {currentSelection.ascii_short_desc})
+        </div>
+      )}
     </Modal>
   );
 };
