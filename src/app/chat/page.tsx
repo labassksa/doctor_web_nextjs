@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import ChatMainContents from "./_components/chatMainContent";
 import useSocket from "../../socket.io/socket.io.initialization";
 import FullScreenButtons from "../../components/common/actions";
+import Header from "./_components/header";
 
 interface Message {
   id: number;
