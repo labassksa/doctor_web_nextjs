@@ -79,7 +79,8 @@ const PrescriptionPage: React.FC = () => {
   };
 
   return (
-    <div className="flex-grow p-8 text-black relative">
+    <div className="pt-20 flex-grow p-4 sm:p-6 lg:p-8 text-black relative">
+      {/* The padding-top (pt-20) accounts for the height of the fixed TabComponent */}
       <TabComponent />
       <Title />
       <PatientInfo />
@@ -89,12 +90,12 @@ const PrescriptionPage: React.FC = () => {
       {selectedDrugs.map((drug, index) => (
         <div
           key={index}
-          className="p-2 border rounded mt-2 text-black flex justify-between items-center"
+          className="p-2 border rounded mt-2 text-black flex justify-between items-center text-sm sm:text-base"
         >
-          <span>{`${drug["Scientific Name"]} (${drug["Trade Name"]}) - ${drug.Strength} ${drug.StrengthUnit}`}</span>
+          <span className="flex-grow break-words">{`${drug["Scientific Name"]} (${drug["Trade Name"]}) - ${drug.Strength} ${drug.StrengthUnit}`}</span>
           <button
             onClick={() => handleRemoveDrug(index)}
-            className="text-red-500 ml-4"
+            className="text-red-500 ml-4 flex-shrink-0"
           >
             &times;
           </button>
@@ -106,12 +107,12 @@ const PrescriptionPage: React.FC = () => {
       {selectedAllergies.map((allergy, index) => (
         <div
           key={index}
-          className="p-2 border rounded mt-2 text-black flex justify-between items-center"
+          className="p-2 border rounded mt-2 text-black flex justify-between items-center text-sm sm:text-base"
         >
-          <span>{`${allergy.TradeName} - ${allergy.Strength} ${allergy.StrengthUnit}`}</span>
+          <span className="flex-grow break-words">{`${allergy.TradeName} - ${allergy.Strength} ${allergy.StrengthUnit}`}</span>
           <button
             onClick={() => handleRemoveAllergy(index)}
-            className="text-red-500 ml-4"
+            className="text-red-500 ml-4 flex-shrink-0"
           >
             &times;
           </button>
@@ -123,12 +124,12 @@ const PrescriptionPage: React.FC = () => {
       {selectedDiagnosis.map((diagnosis, index) => (
         <div
           key={index}
-          className="p-2 border rounded mt-2 text-black flex justify-between items-center"
+          className="p-2 border rounded mt-2 text-black flex justify-between items-center text-sm sm:text-base"
         >
-          <span>{`${diagnosis.ascii_desc} (${diagnosis.ascii_short_desc})`}</span>
+          <span className="flex-grow break-words">{`${diagnosis.ascii_desc} (${diagnosis.ascii_short_desc})`}</span>
           <button
             onClick={() => handleRemoveDiagnosis(index)}
-            className="text-red-500 ml-4"
+            className="text-red-500 ml-4 flex-shrink-0"
           >
             &times;
           </button>
