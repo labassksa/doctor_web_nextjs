@@ -16,9 +16,17 @@ export const verifyOTPandLogin = async (
     const response = await axios.post(`${apiUrl}/verifyOTPandLogin`, data);
 
     if (response.status === 200) {
-      const { token } = response.data;
+      // Extract authResponse (userId, token, refreshToken) from the response
+      const { userId, token, refreshToken } = response.data.authResponse;
+
+      // Store the token and userId in localStorage
       localStorage.setItem("labass_token", token);
-      return { success: true, token };
+      localStorage.setItem("labass_userId", userId);
+
+      console.log(`Stored userId: ${userId}`);
+      console.log(`Stored token: ${token}`);
+
+      return { success: true, token, userId, refreshToken };
     } else {
       return { success: false, message: "Unexpected response status code" };
     }

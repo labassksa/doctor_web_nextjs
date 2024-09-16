@@ -16,6 +16,7 @@ interface Message {
 
 const ChatPage: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
+  //TODO change url in use socket
   const { socket, isConnected } = useSocket("http://localhost:4000");
 
   const consultationId = 3; // Fixed consultationId for simplicity and testing

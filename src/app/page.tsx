@@ -1,235 +1,117 @@
-import React from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import FeedConsultations from "./_components/FeedConsultations"; // Adjust the path as needed
-import {
-  Consultation,
-  ConsultationStatus,
-  ConsultationType,
-} from "../models/consultation"; // Adjust the path as needed
-import { PatientProfile } from "../models/patientProfile";
-import { DoctorProfile } from "../models/doctorProfile";
-import User from "../models/user";
+import { Consultation } from "../models/consultation"; // Adjust the path as needed
 import Sidebar from "../components/sidebar/sidebar";
-
-// Named variables for patientUser1
-const patient1Id = 1;
-const patient1FirstName = "";
-const patient1LastName = "";
-const patient1NationalId = "1234567890";
-const patient1DateOfBirth = "1990-01-01";
-const patient1Gender = "Male";
-const patient1PhoneNumber = "123-456-7890";
-const patient1Email = "john.doe@example.com";
-const patient1Role = "Patient";
-
-// Named variables for patientUser2
-const patient2Id = 2;
-const patient2FirstName = "Yazeed"; // No first name for patientUser2
-const patient2LastName = "Smith";
-const patient2NationalId = "9876543210";
-const patient2DateOfBirth = "1992-02-02";
-const patient2Gender = "Female";
-const patient2PhoneNumber = "987-654-3210";
-const patient2Email = "jane.smith@example.com";
-const patient2Role = "Patient";
-const patient3Id = 2;
-const patient3FirstName = "Saud"; // No first name for patientUser2
-const patient3LastName = "Rowaily";
-const patient3NationalId = "9876543210";
-const patient3DateOfBirth = "1992-02-02";
-const patient3Gender = "Female";
-const patient3PhoneNumber = "987-654-3210";
-const patient3Email = "jane.smith@example.com";
-const patient3Role = "Patient";
-
-// Named variables for doctorUser1
-const doctor1Id = 3;
-const doctor1FirstName = "Alice";
-const doctor1LastName = "Johnson";
-const doctor1NationalId = "1122334455";
-const doctor1DateOfBirth = "1980-10-10";
-const doctor1Gender = "Female";
-const doctor1PhoneNumber = "555-555-5555";
-const doctor1Email = "alice.johnson@example.com";
-const doctor1Role = "Doctor";
-
-// Named variables for doctorUser2
-const doctor2Id = 4;
-const doctor2FirstName = ""; // No first name for doctorUser2
-const doctor2LastName = "Williams";
-const doctor2NationalId = "5566778899";
-const doctor2DateOfBirth = "1985-07-15";
-const doctor2Gender = "Male";
-const doctor2PhoneNumber = "444-444-4444";
-const doctor2Email = "chris.williams@example.com";
-const doctor2Role = "Doctor";
-
-// Sample Users
-const patientUser1 = new User({
-  id: patient1Id,
-  firstName: patient1FirstName,
-  lastName: patient1LastName,
-  nationalId: patient1NationalId,
-  dateOfBirth: patient1DateOfBirth,
-  gender: patient1Gender,
-  phoneNumber: patient1PhoneNumber,
-  email: patient1Email,
-  role: patient1Role,
-});
-
-const patientUser2 = new User({
-  id: patient2Id,
-  firstName: patient2FirstName,
-  lastName: patient2LastName,
-  nationalId: patient2NationalId,
-  dateOfBirth: patient2DateOfBirth,
-  gender: patient2Gender,
-  phoneNumber: patient2PhoneNumber,
-  email: patient2Email,
-  role: patient2Role,
-});
-const patientUser3 = new User({
-  id: patient3Id,
-  firstName: patient3FirstName,
-  lastName: patient3LastName,
-  nationalId: patient3NationalId,
-  dateOfBirth: patient3DateOfBirth,
-  gender: patient3Gender,
-  phoneNumber: patient3PhoneNumber,
-  email: patient3Email,
-  role: patient3Role,
-});
-
-const doctorUser1 = new User({
-  id: doctor1Id,
-  firstName: doctor1FirstName,
-  lastName: doctor1LastName,
-  nationalId: doctor1NationalId,
-  dateOfBirth: doctor1DateOfBirth,
-  gender: doctor1Gender,
-  phoneNumber: doctor1PhoneNumber,
-  email: doctor1Email,
-  role: doctor1Role,
-});
-
-const doctorUser2 = new User({
-  id: doctor2Id,
-  firstName: doctor2FirstName,
-  lastName: doctor2LastName,
-  nationalId: doctor2NationalId,
-  dateOfBirth: doctor2DateOfBirth,
-  gender: doctor2Gender,
-  phoneNumber: doctor2PhoneNumber,
-  email: doctor2Email,
-  role: doctor2Role,
-});
-
-// Sample Profiles
-const patientProfile1 = new PatientProfile({
-  id: 1,
-  user: patientUser1,
-});
-const patientProfile2 = new PatientProfile({
-  id: 2,
-  user: patientUser2,
-});
-const patientProfile3 = new PatientProfile({
-  id: 3,
-  user: patientUser2,
-});
-
-const doctorProfile1 = new DoctorProfile({
-  id: 1,
-  specialty: "Cardiology",
-  medicalLicenseNumber: "MED12345",
-  user: doctorUser1,
-});
-
-const doctorProfile2 = new DoctorProfile({
-  id: 2,
-  specialty: "Neurology",
-  medicalLicenseNumber: "MED67890",
-  user: doctorUser2,
-});
-
-// Sample Consultations
-const consultation1 = new Consultation(
-  1,
-  new Date("2023-07-04T10:22:00"),
-  null,
-  null,
-  new Date("2023-07-04T10:22:00"),
-  new Date(),
-  ConsultationStatus.Paid,
-  ConsultationType.Quick,
-  patientProfile1,
-  null,
-  false,
-  false,
-  false
-);
-
-const consultation2 = new Consultation(
-  2,
-  new Date("2023-07-04T10:22:00"),
-  new Date("2023-07-04T10:24:00"),
-  new Date("2023-07-04T10:28:00"),
-  new Date("2023-07-04T10:22:00"),
-  new Date(),
-  ConsultationStatus.Open,
-  ConsultationType.Quick,
-  patientProfile2,
-  doctorProfile1,
-  true,
-  true,
-  true
-);
-const consultation3 = new Consultation(
-  3,
-  new Date("2023-07-04T10:22:00"),
-  new Date("2023-07-04T10:24:00"),
-  new Date("2023-07-04T10:28:00"),
-  new Date("2023-07-04T10:22:00"),
-  new Date(),
-  ConsultationStatus.Open,
-  ConsultationType.Quick,
-  patientProfile2,
-  doctorProfile1,
-  true,
-  true,
-  true
-);
-
-// Convert class instances to plain objects
-const plainConsultation1 = JSON.parse(JSON.stringify(consultation1));
-const plainConsultation2 = JSON.parse(JSON.stringify(consultation2));
-const plainConsultation3 = JSON.parse(JSON.stringify(consultation3));
-const plainConsultation4 = JSON.parse(JSON.stringify(consultation2));
+import { fetchFeedConsultations } from "./_controllers/feedConsultations"; // Adjust the path as needed
+import { acceptConsultation } from "./_controllers/doctorAcceptConsultation"; // Add the controller for accepting consultations
+import { useRouter } from "next/navigation"; // Import useRouter for client-side navigation
 
 const FeedPage = () => {
-  // Sample consultations data
-  const consultations = [
-    plainConsultation1,
-    plainConsultation2,
-    plainConsultation3,
-    plainConsultation4,
+  const [consultations, setConsultations] = useState<Consultation[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [acceptLoading, setAcceptLoading] = useState(false); // For loading during acceptance
+  const [confirmationMessage, setConfirmationMessage] = useState<string | null>(
+    null
+  ); // For showing confirmation message
 
-  ];
+  const router = useRouter(); // Initialize the router for navigation
+
+  // Fetch consultations on page load
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const fetchedConsultations = await fetchFeedConsultations();
+        setConsultations(fetchedConsultations);
+      } catch (error: any) {
+        if (error.message === "Unauthorized: User not found.") {
+          // Redirect to login page when user is unauthorized
+          //TODO, replace with correct url, client redirection
+          router.push("http://localhost:3000/login");
+        } else {
+          console.error("Error fetching feed consultations:", error);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [router]);
+
+  // Handle consultation acceptance
+  const handleAcceptConsultation = async (consultationId: number) => {
+    setAcceptLoading(true);
+    try {
+      const updatedConsultation = await acceptConsultation(consultationId);
+      setConsultations((prevConsultations) =>
+        prevConsultations.map((consultation) =>
+          consultation.id === consultationId
+            ? {
+                ...consultation,
+                ...updatedConsultation,
+                status: "Open",
+                doctorJoinedAT: new Date(),
+              }
+            : consultation
+        )
+      );
+      setConfirmationMessage("Consultation accepted successfully!");
+    } catch (error) {
+      console.error("Failed to accept consultation", error);
+      setConfirmationMessage("Failed to accept consultation.");
+    } finally {
+      setAcceptLoading(false);
+      setTimeout(() => {
+        setConfirmationMessage(null); // Clear confirmation message after 3 seconds
+      }, 3000);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div
+          className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full"
+          role="status"
+        >
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex bg-gray-100 min-h-screen overflow-hidden">
+    <div className="flex bg-gray-100 min-h-screen">
       <Sidebar />
       <main className="flex-grow flex flex-col lg:flex-row h-screen">
+        {/* Mobile header */}
         <div className="fixed top-0 left-0 right-0 p-4 bg-white shadow-md z-10 lg:hidden">
           <h1 className="text-black font-semibold text-2xl text-center lg:text-4xl">
             Feed
           </h1>
         </div>
+
+        {/* Feed content */}
         <div className="flex-grow flex flex-col py-2 mt-16 lg:mt-0 overflow-auto">
-          <div className="w-full text-center lg:w-1/4 lg:text-left">
+          <div className="w-full px-4">
             <h1 className="hidden lg:block text-black font-semibold text-xl lg:text-4xl mb-4">
               Feed
             </h1>
-            <FeedConsultations consultations={consultations} />
+            {confirmationMessage && (
+              <div
+                className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative"
+                role="alert"
+              >
+                {confirmationMessage}
+              </div>
+            )}
+            <FeedConsultations
+              consultations={consultations}
+              onAccept={handleAcceptConsultation} // Pass the accept function to the child component
+              acceptLoading={acceptLoading} // Pass loading state for acceptance
+            />
           </div>
         </div>
       </main>
