@@ -12,7 +12,6 @@ export enum ConsultationStatus {
   Open = "Open",
   Closed = "Closed",
   PendingPayment = "PendingPayment",
-  AfterPayment = "AfterPayment",
 }
 
 export class Consultation {
