@@ -20,6 +20,7 @@ const FeedConsultations: React.FC<FeedConsultationsProps> = ({
   >(null); // Track which consultation is being accepted
 
   const handleChatClick = (consultationId: number) => {
+    console.log(`consultation id onClick: ${consultationId} `);
     router.push(`/chat/${consultationId}`); // Navigate to the chat page for the consultation
   };
 
@@ -95,7 +96,7 @@ const FeedConsultations: React.FC<FeedConsultationsProps> = ({
                 Consultation ID:{" "}
                 <span className="text-black">{consultation.id}</span>
               </div>
-              <div className="text-xs text-gray-500">
+              <div className="text-xs m-1 text-gray-500">
                 Status:{" "}
                 <span
                   className={`px-2 py-1 rounded-full text-xs font-medium ${

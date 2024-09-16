@@ -1,13 +1,14 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+
+import React, { useState, useEffect, useRef, Suspense } from "react";
 import OTPInput from "./_components/otp/otpInput";
 import OTPTopText from "./_components/otp/otpTopText";
 import OTPBottomText from "./_components/otp/otpBottomText";
 import { useRouter, useSearchParams } from "next/navigation";
-import { verifyOTPandLogin } from "././_controllers/verifyOTPandLogin";
+import { verifyOTPandLogin } from "./_controllers/verifyOTPandLogin";
 import { loginDoctor } from "../login/_controllers/sendOTP.Controller"; // Adjust the import path as necessary
 
-const OTPPage = () => {
+const OTPPage: React.FC = () => {
   const [otp, setOtp] = useState(["", "", "", ""]);
   const inputRefs = useRef<Array<HTMLInputElement | null>>([
     null,
@@ -19,6 +20,39 @@ const OTPPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+
+  // Wrap useSearchParams in Suspense boundary
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <OTPPageContent
+        otp={otp}
+        setOtp={setOtp}
+        inputRefs={inputRefs}
+        phoneNumber={phoneNumber}
+        setPhoneNumber={setPhoneNumber}
+        loading={loading}
+        setLoading={setLoading}
+        error={error}
+        setError={setError}
+        router={router}
+      />
+    </Suspense>
+  );
+};
+
+// Separate the OTPPage logic into a child component
+const OTPPageContent: React.FC<any> = ({
+  otp,
+  setOtp,
+  inputRefs,
+  phoneNumber,
+  setPhoneNumber,
+  loading,
+  setLoading,
+  error,
+  setError,
+  router,
+}) => {
   const searchParams = useSearchParams();
 
   useEffect(() => {
@@ -27,7 +61,7 @@ const OTPPage = () => {
   }, [searchParams]);
 
   useEffect(() => {
-    if (otp.every((val) => val.length === 1)) {
+    if (otp.every((val: string | any[]) => val.length === 1)) {
       handleVerifyOTP();
     }
   }, [otp]);
@@ -53,10 +87,8 @@ const OTPPage = () => {
     setLoading(true);
     setError(null);
 
-    // Simulate loading delay
     setTimeout(async () => {
       const result = await verifyOTPandLogin("doctor", phoneNumber, otpCode);
-
       setLoading(false);
 
       if (result?.success) {
@@ -64,7 +96,7 @@ const OTPPage = () => {
       } else {
         setError(result?.message || "Failed to verify OTP.");
       }
-    }, 2000); // Simulate a 2-second delay
+    }, 2000);
   };
 
   const handleResendOTP = async () => {
@@ -76,19 +108,16 @@ const OTPPage = () => {
     try {
       const result = await loginDoctor(phoneNumber);
       if (result && result.success) {
-        setOtp(["", "", "", ""]); // Clear the OTP input fields
-        inputRefs.current[0]?.focus(); // Focus on the first input field
+        setOtp(["", "", "", ""]);
+        inputRefs.current[0]?.focus();
         setError(null);
       } else if (result) {
         setError(result.message);
-        console.error("Failed to resend OTP:", result.message);
       } else {
         setError("حدث خطأ ، حاول مرة أخرى");
-        console.error("Failed to resend OTP: Result is undefined");
       }
     } catch (error) {
       setError("حدث خطأ ، حاول مرة أخرى");
-      console.error("Failed to resend OTP:", error);
     }
   };
 
@@ -100,7 +129,7 @@ const OTPPage = () => {
         </div>
         {phoneNumber ? <OTPTopText phoneNumber={phoneNumber} /> : null}
         <div className="flex mt-10 justify-center">
-          {otp.map((value, index) => (
+          {otp.map((value: string, index: number) => (
             <OTPInput
               key={index}
               value={value}

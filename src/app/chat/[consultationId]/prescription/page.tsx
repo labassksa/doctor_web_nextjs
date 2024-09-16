@@ -1,17 +1,17 @@
 "use client";
 
 import React, { useState } from "react";
-import TabComponent from "./_components/tabs";
-import Title from "./_components/title";
-import PatientInfo from "./_components/PatientInfo";
-import ActionButton from "./_components/ActionButton";
-import IssuePrescriptionButton from "./_components/IssuePrescriptionButton";
-import DrugModal from "./_components/DrugModal";
-import DiagnosisModal from "./_components/DiagnosisModal";
-import Modal from "./_components/Modal";
-import SearchBar from "./_components/searchbar";
-import { DrugHit } from "../../utils/types/drugHit";
-import { DiagnosisHit } from "../../utils/types/diagnosis";
+import TabComponent from "../../_presc-components/tabs";
+import Title from "../../_presc-components/title";
+import PatientInfo from "../../_presc-components/PatientInfo";
+import ActionButton from "../../_presc-components/ActionButton";
+import IssuePrescriptionButton from "../../_presc-components/IssuePrescriptionButton";
+import DrugModal from "../../_presc-components/DrugModal";
+import DiagnosisModal from "../../_presc-components/DiagnosisModal";
+import Modal from "../../_presc-components/Modal";
+import SearchBar from "../../_presc-components/searchbar";
+import { DrugHit } from "../../../../utils/types/drugHit";
+import { DiagnosisHit } from "../../../../utils/types/diagnosis";
 
 const PrescriptionPage: React.FC = () => {
   const [openModal, setOpenModal] = useState<string | null>(null);

@@ -6,8 +6,7 @@ import { fetchDoctorConsultations } from "./_controller/myconsultations"; // Cor
 import { Consultation } from "../../models/consultation"; // Adjust the path as needed
 import Sidebar from "../../components/sidebar/sidebar";
 import FullScreenButtons from "../../components/common/actions";
-import ChatMainContents from "../chat/_components/chatMainContent";
-import useSocket from "../../socket.io/socket.io.initialization"; // Adjust the path as needed
+import ChatMainContents from "../chat/_components/chatMainContent"; // Adjust the path as needed
 
 interface Message {
   id: number;
@@ -21,17 +20,14 @@ interface Message {
 const MyDoctorConsultationsPage: React.FC = () => {
   const [consultations, setConsultations] = useState<Consultation[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedConsultation, setSelectedConsultation] =
+    useState<Consultation | null>(null); // Track selected consultation
   const [messages, setMessages] = useState<Message[]>([]);
-  const [selectedConsultationId, setSelectedConsultationId] = useState<
-    number | null
-  >(null); // Store selected consultationId
-
-  const socket = useSocket("http://localhost:3000"); // Replace with your backend URL
 
   useEffect(() => {
     const loadConsultations = async () => {
       try {
-        const fetchedConsultations = await fetchDoctorConsultations(); // Use the function here
+        const fetchedConsultations = await fetchDoctorConsultations();
         setConsultations(fetchedConsultations);
       } catch (error) {
         console.error("Failed to load doctor consultations:", error);
@@ -43,41 +39,20 @@ const MyDoctorConsultationsPage: React.FC = () => {
     loadConsultations();
   }, []);
 
+  const handleConsultationClick = (consultation: Consultation) => {
+    setSelectedConsultation(consultation);
+    // Optionally, initialize messages or other details based on consultationId
+  };
+
   if (loading) {
     return <div>Loading consultations...</div>;
   }
-
-  const handleSendMessage = (messageText: string) => {
-    const newMessage: Message = {
-      id: messages.length + 1,
-      message: messageText,
-      senderId: 1,
-      consultationId: 3,
-      isSent: true,
-      read: false,
-    };
-    setMessages((prevMessages) => [...prevMessages, newMessage]);
-
-    // Simulate backend confirmation
-    setTimeout(() => {
-      setMessages((prevMessages) =>
-        prevMessages.map((msg) =>
-          msg.id === newMessage.id ? { ...msg, isSent: true } : msg
-        )
-      );
-    }, 2000);
-  };
-
-  // Handle consultation click and set the selected consultationId
-  const handleConsultationClick = (consultationId: number) => {
-    setSelectedConsultationId(consultationId);
-  };
 
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar />
 
-      <main className="flex flex-col w-full">
+      <main className="flex-grow flex flex-col lg:flex-row h-screen">
         {/* Mobile header */}
         <div className="fixed top-0 left-0 right-0 p-4 bg-white shadow-md z-10 lg:hidden">
           <h1 className="text-black font-semibold text-2xl text-center lg:text-4xl">
@@ -85,31 +60,12 @@ const MyDoctorConsultationsPage: React.FC = () => {
           </h1>
         </div>
 
-        {/* Mobile only: show only the consultations list */}
-        <div className="flex flex-row flex-grow h-full mt-16 lg:mt-0">
-          <div className="w-full lg:w-1/3 text-black overflow-y-auto">
+        <div className="flex flex-row flex-grow h-full">
+          <div className="w-full sm:w-2/3 lg:w-1/3 text-black overflow-y-auto mt-16">
             <MyConsultations
               consultations={consultations}
-              onConsultationClick={handleConsultationClick} // Pass the click handler to MyConsultations
+              onConsultationClick={handleConsultationClick} // Pass the consultation click handler
             />
-          </div>
-
-          {/* Only show chat and buttons on larger screens */}
-          <div className="hidden lg:flex flex-col w-1/2 h-full text-black">
-            {selectedConsultationId && (
-              <>
-                <div className="bg-green-100">Header</div>
-                <ChatMainContents
-                  consultationId={selectedConsultationId}
-                  showActions={false}
-                  messages={messages}
-                  handleSendMessage={handleSendMessage}
-                />
-              </>
-            )}
-          </div>
-          <div className="hidden lg:block w-1/6 h-full">
-            <FullScreenButtons />
           </div>
         </div>
       </main>

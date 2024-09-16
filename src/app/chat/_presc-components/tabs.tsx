@@ -1,16 +1,18 @@
 "use client";
 import React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 
 const TabComponent: React.FC = () => {
-  const pathname = usePathname();
+  const { consultationId } = useParams(); // Get consultationId from the dynamic route
+  const pathname = usePathname(); // Get current pathname for active tab detection
 
+  // Adjust URLs to include the dynamic consultationId, noting that chat has a different structure
   const tabs = [
-    { name: "Chat", href: "/chat" },
-    { name: "Prescription", href: "/prescription" },
-    { name: "SOAP", href: "/soap" },
-    { name: "Sick-Leave", href: "/sick-leave" },
+    { name: "Chat", href: `/chat/${consultationId}` }, // Chat follows /chat/[consultationId]
+    { name: "Prescription", href: `/chat/${consultationId}/prescription` }, // The rest follow /[consultationId] structure
+    { name: "SOAP", href: `/chat/${consultationId}/soap` },
+    { name: "Sick-Leave", href: `/chat/${consultationId}/sickleave` },
   ];
 
   return (

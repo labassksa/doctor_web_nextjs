@@ -1,12 +1,8 @@
-// socket.io/socket.io.initialization.ts
-// This script enhances the initialization of Socket.IO to handle reconnection issues effectively.
-// It ensures that the socket is connected before sending messages by managing reconnections and exposing the connection state.
-
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
-const useSocket = (url: string) => {
+const useSocket = (url: string, token: string) => {
   const socketRef = useRef<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [attemptingReconnection, setAttemptingReconnection] = useState(false);
@@ -14,6 +10,9 @@ const useSocket = (url: string) => {
   useEffect(() => {
     const initializeSocket = () => {
       socketRef.current = io(url, {
+        auth: {
+          token, // Pass the JWT token during the WebSocket handshake
+        },
         reconnectionAttempts: 5, // Maximum number of reconnection attempts
         reconnectionDelay: 1000, // Delay between reconnection attempts in milliseconds
       });
@@ -47,7 +46,7 @@ const useSocket = (url: string) => {
         socketRef.current.disconnect();
       }
     };
-  }, [url]);
+  }, [url, token]); // Add token as a dependency to ensure the socket is reinitialized if the token changes
 
   // Function to emit events, only if the socket is connected
   const emitEvent = (event: string, data: any) => {
