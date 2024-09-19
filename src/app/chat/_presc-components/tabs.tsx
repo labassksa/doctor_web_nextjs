@@ -16,21 +16,23 @@ const TabComponent: React.FC = () => {
   ];
 
   return (
-    <div className="fixed top-0 left-0 w-full bg-white shadow-sm p-4 z-50 overflow-x-auto">
-      <div className="flex justify-start space-x-4 sm:space-x-6 md:space-x-8 max-w-full overflow-x-auto whitespace-nowrap">
-        {tabs.map((tab) => (
-          <Link key={tab.name} href={tab.href} passHref>
-            <div
-              className={`cursor-pointer px-3 py-2 md:px-4 rounded text-sm md:text-base ${
-                pathname === tab.href
-                  ? "bg-green-100 text-black font-semibold"
-                  : "text-gray-500 hover:text-black"
-              } transition-colors duration-300`}
-            >
-              {tab.name}
-            </div>
-          </Link>
-        ))}
+    <div className="fixed top-0 left-0 w-full bg-white shadow-sm text-xs z-50 h-16">
+      <div className="flex justify-center">
+        <div className="flex space-x-4 sm:space-x-6 md:space-x-8 p-4 overflow-x-auto max-w-full scrollbar-hide">
+          {tabs.map((tab) => (
+            <Link key={tab.name} href={tab.href} passHref>
+              <div
+                className={`cursor-pointer px-3 py-2 md:px-4 rounded text-sm md:text-base ${
+                  pathname === tab.href
+                    ? "bg-green-100 text-black font-semibold"
+                    : "text-gray-500 hover:text-black"
+                } transition-colors duration-300`}
+              >
+                {tab.name}
+              </div>
+            </Link>
+          ))}
+        </div>
       </div>
     </div>
   );
