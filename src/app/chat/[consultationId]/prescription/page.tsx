@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useParams } from "next/navigation";
 import TabComponent from "../../_presc-components/tabs";
 import Title from "../../_presc-components/title";
 import PatientInfo from "../../_presc-components/PatientInfo";
@@ -12,9 +13,13 @@ import Modal from "../../_presc-components/Modal";
 import SearchBar from "../../_presc-components/searchbar";
 import { DrugHit } from "../../../../utils/types/drugHit";
 import { DiagnosisHit } from "../../../../utils/types/diagnosis";
+import { issueOrUpdatePrescription } from "./_controllers/issueOrUpdatePrescription";
+import ConfirmationModal from "../../_presc-components/ConfirmationModal"; // Import the new confirmation modal
 
 const PrescriptionPage: React.FC = () => {
+  const { consultationId } = useParams();
   const [openModal, setOpenModal] = useState<string | null>(null);
+  const [confirmationModalOpen, setConfirmationModalOpen] = useState(false); // State for confirmation modal
   const [selectedDrugs, setSelectedDrugs] = useState<DrugHit[]>([]);
   const [selectedAllergies, setSelectedAllergies] = useState<DrugHit[]>([]);
   const [selectedDiagnosis, setSelectedDiagnosis] = useState<DiagnosisHit[]>(
@@ -43,16 +48,17 @@ const PrescriptionPage: React.FC = () => {
     closeAllModals();
   };
 
+  const handleAddAllergy = (allergy: DrugHit) => {
+    setSelectedAllergies([...selectedAllergies, allergy]);
+    closeAllModals();
+  };
+
   const handleAdd = () => {
     if (currentSelection) {
       if (openModal === "drug") {
         handleAddDrug(currentSelection as DrugHit);
       } else if (openModal === "allergy") {
-        setSelectedAllergies([
-          ...selectedAllergies,
-          currentSelection as DrugHit,
-        ]);
-        closeAllModals();
+        handleAddAllergy(currentSelection as DrugHit);
       } else if (openModal === "diagnosis") {
         handleAddDiagnosis(currentSelection as DiagnosisHit);
       }
@@ -78,9 +84,50 @@ const PrescriptionPage: React.FC = () => {
     setSelectedDiagnosis(updatedDiagnosis);
   };
 
+  // Open the confirmation modal
+  const handleOpenConfirmationModal = () => {
+    setConfirmationModalOpen(true);
+  };
+
+  // Confirm prescription and send it to the server
+  const handleConfirmPrescription = async () => {
+    const drugs = selectedDrugs.map((drug) => ({
+      drugName: drug["Trade Name"],
+      activeIngredient: drug["Scientific Name"],
+      strength: drug.Strength,
+      pharmaceuticalForm: "Capsule",
+      dose: "1",
+      doseUnit: "Capsule",
+      registrationNo: "XYZ-1234",
+      route: "Oral",
+      frequency: "3",
+      indications: "Bacterial infection",
+      duration: "7",
+      durationUnit: "days",
+      prn: false,
+    }));
+    const diagnoses = selectedDiagnosis.map(
+      (diagnosis) => diagnosis.ascii_desc
+    );
+    const allergies = selectedAllergies.map((allergy) => allergy["Trade Name"]);
+
+    try {
+      const result = await issueOrUpdatePrescription(
+        Number(consultationId),
+        drugs,
+        diagnoses,
+        allergies
+      );
+      console.log("Prescription result:", result);
+    } catch (error) {
+      console.error("Error issuing prescription:", error);
+    } finally {
+      setConfirmationModalOpen(false); // Close confirmation modal after issuing
+    }
+  };
+
   return (
     <div className="pt-20 flex-grow p-4 sm:p-6 lg:p-8 text-black relative">
-      {/* The padding-top (pt-20) accounts for the height of the fixed TabComponent */}
       <TabComponent />
       <Title />
       <PatientInfo />
@@ -136,7 +183,17 @@ const PrescriptionPage: React.FC = () => {
         </div>
       ))}
 
-      <IssuePrescriptionButton />
+      <IssuePrescriptionButton onClick={handleOpenConfirmationModal} />
+
+      {/* New Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={confirmationModalOpen}
+        onClose={() => setConfirmationModalOpen(false)}
+        onConfirm={handleConfirmPrescription}
+        selectedDrugs={selectedDrugs}
+        selectedAllergies={selectedAllergies}
+        selectedDiagnosis={selectedDiagnosis}
+      />
 
       {/* Modals */}
       <DrugModal
@@ -151,7 +208,6 @@ const PrescriptionPage: React.FC = () => {
         onAdd={handleAddDiagnosis}
       />
 
-      {/* Allergy Modal as an example */}
       <Modal
         isOpen={openModal === "allergy"}
         onClose={closeAllModals}
