@@ -14,7 +14,7 @@ import SearchBar from "../../_presc-components/searchbar";
 import { DrugHit } from "../../../../utils/types/drugHit";
 import { DiagnosisHit } from "../../../../utils/types/diagnosis";
 import { issueOrUpdatePrescription } from "./_controllers/issueOrUpdatePrescription";
-import ConfirmationModal from "../../_presc-components/ConfirmationModal"; // Import the new confirmation modal
+import ConfirmationModal from "../../_presc-components/confirmationModal"; // Import the new confirmation modal
 
 const PrescriptionPage: React.FC = () => {
   const { consultationId } = useParams();
