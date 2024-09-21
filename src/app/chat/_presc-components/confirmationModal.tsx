@@ -23,43 +23,55 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 m-2">
-      <div className="bg-white p-6 rounded-lg w-full sm:w-1/2 lg:w-1/3">
+      <div className="bg-white p-6 rounded-lg w-full sm:w-1/2 lg:w-1/3 max-h-screen overflow-y-auto">
         <h2 className="text-lg font-semibold mb-4 m-2">Confirm Prescription</h2>
 
-        <h3 className="text-sm font-semibold mb-2 m-2">Selected Drugs</h3>
-        {selectedDrugs.length > 0 ? (
-          selectedDrugs.map((drug, index) => (
-            <p
-              key={index}
-              className="mb-2 text-xs"
-            >{`${drug["Scientific Name"]} (${drug["Trade Name"]}) - ${drug.Strength} ${drug.StrengthUnit}`}</p>
-          ))
-        ) : (
-          <p className="mb-2">No drugs selected.</p>
-        )}
+        {/* Scrollable section with numbered list for drugs */}
+        <div className="max-h-96 overflow-y-auto p-2 border border-gray-200 rounded-lg">
+          <h3 className="text-sm font-semibold mb-2 m-2">Selected Drugs</h3>
+          {selectedDrugs.length > 0 ? (
+            <ol className="list-decimal list-inside m-2">
+              {selectedDrugs.map((drug, index) => (
+                <li
+                  key={index}
+                  className="text-xs mb-2"
+                >{`${drug["Scientific Name"]} (${drug["Trade Name"]}) - strengthUnit: ${drug.StrengthUnit}`}</li>
+              ))}
+            </ol>
+          ) : (
+            <p className="mb-4 text-xs">No drugs selected.</p>
+          )}
 
-        <h3 className="text-sm font-semibold  mb-2 ">Selected Allergies</h3>
-        {selectedAllergies.length > 0 ? (
-          selectedAllergies.map((allergy, index) => (
-            <p key={index} className="m-2 text-xs">
-              {allergy["Trade Name"]}
-            </p>
-          ))
-        ) : (
-          <p className="mb-4 text-xs">No allergies selected.</p>
-        )}
+          {/* Numbered list for allergies */}
+          <h3 className="text-sm font-semibold mb-2 m-2">Selected Allergies</h3>
+          {selectedAllergies.length > 0 ? (
+            <ol className="list-decimal list-inside m-2">
+              {selectedAllergies.map((allergy, index) => (
+                <li key={index} className="text-xs mb-2">
+                  {allergy["Trade Name"]}
+                </li>
+              ))}
+            </ol>
+          ) : (
+            <p className="mb-4 text-xs">No allergies selected.</p>
+          )}
 
-        <h3 className="text-sm font-semibold mb-4 ">Selected Diagnoses</h3>
-        {selectedDiagnosis.length > 0 ? (
-          selectedDiagnosis.map((diagnosis, index) => (
-            <p key={index} className="m-2">
-              {diagnosis.ascii_desc}
-            </p>
-          ))
-        ) : (
-          <p className="mb-4 text-xs">No diagnoses selected.</p>
-        )}
+          {/* Numbered list for diagnoses */}
+          <h3 className="text-sm font-semibold mb-2 m-2">Selected Diagnoses</h3>
+          {selectedDiagnosis.length > 0 ? (
+            <ol className="list-decimal list-inside m-2">
+              {selectedDiagnosis.map((diagnosis, index) => (
+                <li key={index} className="text-xs mb-2">
+                  {diagnosis.ascii_desc}
+                </li>
+              ))}
+            </ol>
+          ) : (
+            <p className="mb-4 text-xs">No diagnoses selected.</p>
+          )}
+        </div>
 
+        {/* Buttons */}
         <div className="mt-6 flex justify-end space-x-2">
           <button
             className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 m-2"

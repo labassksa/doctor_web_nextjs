@@ -34,7 +34,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
       initialState: {
         query:
           selectedItem && isDrugHit(selectedItem)
-            ? `${selectedItem["Scientific Name"]} - ${selectedItem["Trade Name"]}`
+            ? `${selectedItem["Scientific Name"]} - ${selectedItem["Trade Name"]}  STRENGTHUNIT: ${selectedItem.StrengthUnit} ROUTE: ${selectedItem.AdministrationRoute}`
             : selectedItem && isDiagnosisHit(selectedItem)
             ? `${selectedItem.ascii_desc}`
             : "",

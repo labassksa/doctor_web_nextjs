@@ -139,7 +139,7 @@ const PrescriptionPage: React.FC = () => {
           key={index}
           className="p-2 border rounded mt-2 text-black flex justify-between items-center text-sm sm:text-base"
         >
-          <span className="flex-grow break-words">{`${drug["Scientific Name"]} (${drug["Trade Name"]}) - ${drug.Strength} ${drug.StrengthUnit}`}</span>
+          <span className="flex-grow break-words">{`${drug["Scientific Name"]} (${drug["Trade Name"]}) - ROUTE: ${drug.AdministrationRoute} STRENGTHUNIT: ${drug.StrengthUnit}`}</span>
           <button
             onClick={() => handleRemoveDrug(index)}
             className="text-red-500 ml-4 flex-shrink-0"

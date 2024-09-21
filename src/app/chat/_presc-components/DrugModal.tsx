@@ -29,6 +29,8 @@ const DrugModal: React.FC<DrugModalProps> = ({ isOpen, onClose, onAdd }) => {
   const [prn, setPrn] = useState(false);
 
   const handleSelect = (item: DrugHit) => {
+    console.log("Selected item:", item);
+
     setCurrentSelection(item);
     setPharmaceuticalForm(item.PharmaceuticalForm || "");
     setActiveIngredients(item["Scientific Name"] || "");
