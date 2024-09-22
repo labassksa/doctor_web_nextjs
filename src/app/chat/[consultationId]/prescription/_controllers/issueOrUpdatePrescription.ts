@@ -21,9 +21,9 @@ export const issueOrUpdatePrescription = async (
         allergies,
       },
       {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        // headers: {
+        //   Authorization: `Bearer ${token}`,
+        // },
       }
     );
 

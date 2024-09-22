@@ -14,12 +14,13 @@ import SearchBar from "../../_presc-components/searchbar";
 import { DrugHit } from "../../../../utils/types/drugHit";
 import { DiagnosisHit } from "../../../../utils/types/diagnosis";
 import { issueOrUpdatePrescription } from "./_controllers/issueOrUpdatePrescription";
-import ConfirmationModal from "../../_presc-components/confirmationModal"; // Import the new confirmation modal
+import ConfirmationModal from "../../_presc-components/confirmationModal";
+import MessageModal from "./_components/messageModal";
 
 const PrescriptionPage: React.FC = () => {
   const { consultationId } = useParams();
   const [openModal, setOpenModal] = useState<string | null>(null);
-  const [confirmationModalOpen, setConfirmationModalOpen] = useState(false); // State for confirmation modal
+  const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
   const [selectedDrugs, setSelectedDrugs] = useState<DrugHit[]>([]);
   const [selectedAllergies, setSelectedAllergies] = useState<DrugHit[]>([]);
   const [selectedDiagnosis, setSelectedDiagnosis] = useState<DiagnosisHit[]>(
@@ -28,6 +29,11 @@ const PrescriptionPage: React.FC = () => {
   const [currentSelection, setCurrentSelection] = useState<
     DrugHit | DiagnosisHit | null
   >(null);
+
+  // State variables for loading, success, and error messages
+  const [isLoading, setIsLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const closeAllModals = () => setOpenModal(null);
 
@@ -111,6 +117,12 @@ const PrescriptionPage: React.FC = () => {
     );
     const allergies = selectedAllergies.map((allergy) => allergy["Trade Name"]);
 
+    // Start loading
+    setIsLoading(true);
+    // Clear previous messages
+    setSuccessMessage("");
+    setErrorMessage("");
+
     try {
       const result = await issueOrUpdatePrescription(
         Number(consultationId),
@@ -119,10 +131,17 @@ const PrescriptionPage: React.FC = () => {
         allergies
       );
       console.log("Prescription result:", result);
+      // Set success message
+      setSuccessMessage("تم إصدار الوصفة الطبية بنجاح.");
     } catch (error) {
       console.error("Error issuing prescription:", error);
+      // Set error message
+      setErrorMessage(`error issuing/updating the prescription ${error}`);
     } finally {
-      setConfirmationModalOpen(false); // Close confirmation modal after issuing
+      // Stop loading
+      setIsLoading(false);
+      // Close confirmation modal
+      setConfirmationModalOpen(false);
     }
   };
 
@@ -221,6 +240,26 @@ const PrescriptionPage: React.FC = () => {
           indexName="allergies"
         />
       </Modal>
+
+      {/* Render Loading Indicator */}
+      {isLoading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="text-white text-xl">issuing prescription ...</div>
+        </div>
+      )}
+
+      {/* Render Success or Error Message Modal */}
+      {(successMessage || errorMessage) && (
+        <MessageModal
+          isOpen={true}
+          onClose={() => {
+            setSuccessMessage("");
+            setErrorMessage("");
+          }}
+          message={successMessage || errorMessage}
+          isSuccess={!!successMessage}
+        />
+      )}
     </div>
   );
 };

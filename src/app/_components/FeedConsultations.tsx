@@ -19,9 +19,9 @@ const FeedConsultations: React.FC<FeedConsultationsProps> = ({
     number | null
   >(null); // Track which consultation is being accepted
 
-  const handleChatClick = (consultationId: number) => {
-    console.log(`consultation id onClick: ${consultationId} `);
-    router.push(`/chat/${consultationId}`); // Navigate to the chat page for the consultation
+  const handleChatClick = (consultation: Consultation) => {
+    console.log(`consultation id onClick: ${consultation.id} `);
+    router.push(`/chat/${consultation.id}`); // Navigate to the chat page for the consultation
   };
 
   const handleAcceptClick = async (consultationId: number) => {
@@ -162,7 +162,7 @@ const FeedConsultations: React.FC<FeedConsultationsProps> = ({
             {consultation.status === ConsultationStatus.Open && (
               <button
                 className="px-4 py-2 bg-blue-500 text-white rounded-full w-full text-xs"
-                onClick={() => handleChatClick(consultation.id)} // Navigate to the chat
+                onClick={() => handleChatClick(consultation)} // Navigate to the chat
               >
                 Chat
               </button>
