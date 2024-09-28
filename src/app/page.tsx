@@ -21,7 +21,7 @@ const FeedPage = () => {
   useEffect(() => {
     const token = localStorage.getItem("labass_token");
     if (!token) {
-      router.push("/login");
+      router.push("https://www.doctor.labass.sa//login");
     }
     const fetchData = async () => {
       setLoading(true);

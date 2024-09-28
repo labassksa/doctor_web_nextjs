@@ -29,13 +29,12 @@ const ChatPage: React.FC = () => {
   const consultationId = params.consultationId;
   const websocketURL = process.env.NEXT_PUBLIC_WEBSOCKET_URL || "";
   const token = localStorage.getItem("labass_token");
-  const userId =
-    typeof window !== "undefined" ? localStorage.getItem("labass_userId") : "";
+  const userId = localStorage.getItem("labass_userId");
 
-  const statusClass = `inline-block px-3 py-1 rounded-full text-xs font-medium ${
-    status === "مفتوحة"
+  const statusClass = `inline-block px-4 mx-2 py-1 rounded-full text-xs font-medium ${
+    status === "Open"
       ? "bg-green-100 text-green-700 mb-1"
-      : status === "مدفوعة"
+      : status === "Paid"
       ? "bg-blue-100 text-blue-700 mb-1"
       : "bg-gray-200 text-gray-700 mb-1"
   }`;
@@ -49,9 +48,9 @@ const ChatPage: React.FC = () => {
       if (consultation && consultation.status) {
         setStatus(
           consultation.status === "Paid"
-            ? "مدفوعة"
+            ? "Paid"
             : consultation.status === "Open"
-            ? "مفتوحة"
+            ? "Open"
             : consultation.status
         );
 
