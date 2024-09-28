@@ -23,6 +23,7 @@ const ChatPage: React.FC = () => {
   const [consultationInfo, setConsultationInfo] = useState<any>(null); // Store consultation data
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showConfirmation, setShowConfirmation] = useState(false); // State for confirmation message
   const router = useRouter();
   const params = useParams();
   const messageEndRef = useRef<HTMLDivElement>(null);
@@ -162,8 +163,14 @@ const ChatPage: React.FC = () => {
   };
 
   const handleEndConsultation = () => {
-    // Implement the logic for ending the consultation here
-    console.log("Ending consultation");
+    // Show confirmation message and button
+    setShowConfirmation(true);
+  };
+
+  const confirmEndConsultation = () => {
+    console.log("Consultation ended.");
+    setShowConfirmation(false); // Reset after confirmation
+    // Logic for actually ending the consultation goes here
   };
 
   if (loading) {
@@ -189,7 +196,7 @@ const ChatPage: React.FC = () => {
         <div className="p-2">
           <button
             onClick={handleEndConsultation}
-            className="w-full  bg-red-600 text-white text-xs py-2 px-2 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+            className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 bg-red-600 text-white text-xs py-2 sm:py-3 px-2 sm:px-4 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
           >
             End Consultation
           </button>
@@ -211,6 +218,33 @@ const ChatPage: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Show confirmation if the End Consultation button is clicked */}
+      {showConfirmation && consultationInfo && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-md shadow-lg w-11/12 sm:w-1/2 lg:w-1/3">
+            <p className="text-center text-black text-sm">
+              Are you sure you want to end the consultation with{" "}
+              {consultationInfo.patient?.user?.firstName || "the patient"}?
+            </p>
+
+            <div className="flex justify-end space-x-4 mt-4">
+              <button
+                onClick={() => setShowConfirmation(false)} // Close the modal
+                className="w-full sm:w-1/3 bg-gray-500 text-xs text-white py-2 rounded-lg hover:bg-gray-600"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmEndConsultation}
+                className="w-full sm:w-1/3 bg-red-600 text-xs text-white py-2 rounded-lg hover:bg-red-700"
+              >
+                End Consultation
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ChatMainContents is scrollable */}
       <div className="flex-grow overflow-y-auto">

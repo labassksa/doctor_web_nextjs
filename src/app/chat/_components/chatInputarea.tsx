@@ -240,7 +240,7 @@ const StickyMessageInput: React.FC<StickyMessageInputProps> = ({
       {/* Modal to display the selected attachment */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-4 rounded-lg max-w-lg w-full">
+          <div className="bg-white p-4 rounded-lg max-w-full sm:max-w-lg w-11/12 sm:w-full md:w-3/4 lg:w-1/2">
             <h2 className="text-md text-right font-bold mb-2">إضافة مرفقات</h2>
 
             {/* Preview the attachment */}
@@ -248,7 +248,7 @@ const StickyMessageInput: React.FC<StickyMessageInputProps> = ({
               <img
                 src={URL.createObjectURL(selectedFile)}
                 alt="Selected Attachment"
-                className="w-full h-auto mb-4"
+                className="w-full h-auto mb-4 object-contain max-h-80"
               />
             ) : (
               <p className="text-sm mb-4">
