@@ -1,31 +1,33 @@
 "use client";
-import React, { useEffect } from "react";
-import StickyMessageInput from "./chatInputarea";
+import React, { useEffect, useRef } from "react";
 
 interface Message {
-  message: string;
+  message?: string;
   senderId: number;
   consultationId: number;
   isSent: boolean;
   read: boolean;
+  attachmentUrl?: string;
+  attachmentType?: string;
 }
 
 interface ChatMainContentsProps {
   consultationId: number;
-  showActions: boolean;
   messages: Message[];
-  handleSendMessage: (messageText: string) => void;
 }
 
 const ChatMainContents: React.FC<ChatMainContentsProps> = ({
   consultationId,
-  showActions,
   messages,
-  handleSendMessage,
 }) => {
+  const messageEndRef = useRef<HTMLDivElement>(null);
+
+  // Scroll to the bottom when new messages are added
   useEffect(() => {
-    console.log("Consultation ID:", consultationId);
-  }, [consultationId]);
+    if (messageEndRef.current) {
+      messageEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
 
   // Retrieve the current userId from localStorage
   const userId =
@@ -34,24 +36,42 @@ const ChatMainContents: React.FC<ChatMainContentsProps> = ({
       : null;
 
   return (
-    <div className="flex flex-col h-full text-black relative">
+    <div className="flex flex-col h-full bg-gray-100 text-black w-full mb-16 mt-24 ">
       <div
-        className="flex-grow overflow-y-auto p-4 bg-gray-100 text-sm mt-16"
+        className="flex-grow overflow-y-auto p-4 bg-gray-100 text-xs mt-0 w-full"
         dir="rtl"
       >
         {messages.map((message, index) => (
           <div
-            key={index} // Use index as key if no unique ID is provided
+            key={index}
             dir="rtl"
-            className={`mb-4 p-3 rounded-lg max-w-xs ${
+            className={`mb-2 p-2 rounded-lg max-w-xs w-auto ${
               message.senderId === Number(userId)
                 ? "bg-custom-background"
                 : "bg-white"
             }`}
           >
-            {message.message}
+            {message.attachmentUrl ? (
+              message.attachmentType === "images" ? (
+                <img
+                  src={message.attachmentUrl}
+                  alt="attachment"
+                  className="w-full h-auto mb-2 rounded"
+                />
+              ) : (
+                <a
+                  href={message.attachmentUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 underline"
+                >
+                  View Attachment
+                </a>
+              )
+            ) : (
+              <p>{message.message}</p>
+            )}
 
-            {/* Only show checkmarks for the sender */}
             {message.senderId === Number(userId) && (
               <div className="text-right">
                 {message.isSent && (
@@ -76,8 +96,8 @@ const ChatMainContents: React.FC<ChatMainContentsProps> = ({
             )}
           </div>
         ))}
+        <div ref={messageEndRef} />
       </div>
-      {showActions && <StickyMessageInput onSendMessage={handleSendMessage} />}
     </div>
   );
 };

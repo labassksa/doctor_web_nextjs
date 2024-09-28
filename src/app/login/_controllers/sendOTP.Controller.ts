@@ -29,7 +29,8 @@ export const loginDoctor = async (phoneNumber: string) => {
   } catch (error) {
     if (axios.isAxiosError(error) && error.response && error.response.data) {
       // Extract error message from backend response
-      const backendMessage = error.response.data.error || "حدث خطأ ، حاول مرة أخرى";
+      const backendMessage =
+        error.response.data.error || "حدث خطأ ، حاول مرة أخرى";
       return { success: false, message: backendMessage };
     } else {
       // Handle unexpected errors

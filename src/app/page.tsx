@@ -19,6 +19,10 @@ const FeedPage = () => {
 
   // Fetch consultations on page load
   useEffect(() => {
+    const token = localStorage.getItem("labass_token");
+    if (!token) {
+      router.push("/login");
+    }
     const fetchData = async () => {
       setLoading(true);
       try {
@@ -28,7 +32,7 @@ const FeedPage = () => {
         if (error.message === "Unauthorized: User not found.") {
           // Redirect to login page when user is unauthorized
           //TODO, replace with correct url, client redirection
-          router.push("http://localhost:3000/login");
+          router.push("/login");
         } else {
           console.error("Error fetching feed consultations:", error);
         }
