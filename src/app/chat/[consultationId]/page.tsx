@@ -2,11 +2,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
 import ChatMainContents from "../../chat/_components/chatMainContent";
-import StickyMessageInput from "../../chat/_components/chatInputarea"; // Import StickyMessageInput
+import StickyMessageInput from "../../chat/_components/chatInputarea";
 import useSocket from "../../../socket.io/socket.io.initialization";
 import TabComponent from "../_presc-components/tabs";
 import { getConsultationById } from "../_controller/getConsultationById";
 import { calculateAge } from "../../../utils/calculateAge";
+import { ConsultationStatus } from "@/models/consultation";
+import { endConsultation } from "@/app/_controllers/endconsultation"; // Your consultation ending function
 
 interface Message {
   id?: string;
@@ -20,10 +22,11 @@ interface Message {
 const ChatPage: React.FC = () => {
   const [status, setStatus] = useState("");
   const [doctorInfo, setDoctorInfo] = useState<any>(null);
-  const [consultationInfo, setConsultationInfo] = useState<any>(null); // Store consultation data
+  const [consultationInfo, setConsultationInfo] = useState<any>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showConfirmation, setShowConfirmation] = useState(false); // State for confirmation message
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [loadingEndConsultation, setLoadingEndConsultation] = useState(false); // Add loading state for ending consultation
   const router = useRouter();
   const params = useParams();
   const messageEndRef = useRef<HTMLDivElement>(null);
@@ -33,10 +36,12 @@ const ChatPage: React.FC = () => {
   const userId = localStorage.getItem("labass_userId");
 
   const statusClass = `inline-block px-4 mx-2 py-1 rounded-full text-xs font-medium ${
-    status === "Open"
+    status === ConsultationStatus.Open
       ? "bg-green-100 text-green-700 mb-1"
-      : status === "Paid"
+      : status === ConsultationStatus.Paid
       ? "bg-blue-100 text-blue-700 mb-1"
+      : status === ConsultationStatus.Closed
+      ? "bg-red-100 text-red-700 mb-1"
       : "bg-gray-200 text-gray-700 mb-1"
   }`;
 
@@ -48,10 +53,10 @@ const ChatPage: React.FC = () => {
 
       if (consultation && consultation.status) {
         setStatus(
-          consultation.status === "Paid"
-            ? "Paid"
-            : consultation.status === "Open"
-            ? "Open"
+          consultation.status === ConsultationStatus.Paid
+            ? ConsultationStatus.Paid
+            : consultation.status === ConsultationStatus.Open
+            ? ConsultationStatus.Open
             : consultation.status
         );
 
@@ -61,7 +66,7 @@ const ChatPage: React.FC = () => {
           setDoctorInfo(null);
         }
 
-        setConsultationInfo(consultation); // Store consultation data
+        setConsultationInfo(consultation);
       }
     };
 
@@ -163,14 +168,28 @@ const ChatPage: React.FC = () => {
   };
 
   const handleEndConsultation = () => {
-    // Show confirmation message and button
     setShowConfirmation(true);
   };
 
-  const confirmEndConsultation = () => {
-    console.log("Consultation ended.");
-    setShowConfirmation(false); // Reset after confirmation
-    // Logic for actually ending the consultation goes here
+  const confirmEndConsultation = async () => {
+    setLoadingEndConsultation(true); // Set loading to true when the request starts
+
+    try {
+      const updatedConsultation = await endConsultation(Number(consultationId));
+
+      // Update the consultation status in the UI based on the response
+      if (updatedConsultation && updatedConsultation.status) {
+        setStatus(updatedConsultation.status);
+        setConsultationInfo(updatedConsultation);
+      }
+
+      setShowConfirmation(false); // Close the modal after successful response
+    } catch (error) {
+      console.error("Failed to end consultation:", error);
+      setShowConfirmation(false); // Close modal even if request fails
+    } finally {
+      setLoadingEndConsultation(false); // Set loading to false after request completes
+    }
   };
 
   if (loading) {
@@ -186,40 +205,56 @@ const ChatPage: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
-      {/* Fixed header */}
       <div className="sticky top-0 w-full bg-white z-50">
         <TabComponent />
       </div>
-      {/* Patient Info and Status */}
-      <div className="fixed bg-white  mt-16 w-full border-b border-gray-200">
-        {/* End Consultation Button */}
-        <div className="p-2">
-          <button
-            onClick={handleEndConsultation}
-            className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 bg-red-600 text-white text-xs py-2 sm:py-3 px-2 sm:px-4 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-          >
-            End Consultation
-          </button>
+
+      <div className="flex flex-col min-h-screen bg-gray-100">
+        <div className="sticky top-0 w-full bg-white z-50">
+          <TabComponent />
         </div>
-        <h2 className="text-xs flex flex-row px-2 font-semibold text-gray-900">
-          Consultation Status: <span className={statusClass}>{status}</span>
-        </h2>
-        {consultationInfo && (
-          <div className="antialiased  flex flex-row">
-            <p className="antialiased px-2 text-xs text-gray-700">
-              Patient Name: {consultationInfo.patient?.user?.firstName || "N/A"}
-            </p>
-            <p className="text-xs px-2 text-gray-700">
-              Patient Age:{" "}
-              {consultationInfo.patient?.user?.dateOfBirth
-                ? calculateAge(consultationInfo.patient?.user?.dateOfBirth)
-                : "N/A"}
-            </p>
-          </div>
-        )}
+
+        <div
+          className={`fixed bg-white w-full border-b border-gray-200 ${
+            status === ConsultationStatus.Open || ConsultationStatus.Open
+              ? "mt-16"
+              : ""
+          }`}
+        >
+          {/* Conditionally show the End Consultation Button only if the consultation is Open */}
+          {status === ConsultationStatus.Open && (
+            <div className="p-2">
+              <button
+                onClick={handleEndConsultation}
+                className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 bg-red-600 text-white text-xs py-2 sm:py-3 px-2 sm:px-4 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+              >
+                End Consultation
+              </button>
+            </div>
+          )}
+
+          {/* Status Display */}
+          <h2 className="text-xs flex flex-row p-2 font-semibold text-gray-900">
+            Consultation Status: <span className={statusClass}>{status}</span>
+          </h2>
+
+          {consultationInfo && (
+            <div className="antialiased flex flex-row">
+              <p className="antialiased px-2 text-xs text-gray-700">
+                Patient Name:{" "}
+                {consultationInfo.patient?.user?.firstName || "N/A"}
+              </p>
+              <p className="text-xs px-2 text-gray-700">
+                Patient Age:{" "}
+                {consultationInfo.patient?.user?.dateOfBirth
+                  ? calculateAge(consultationInfo.patient?.user?.dateOfBirth)
+                  : "N/A"}
+              </p>
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Show confirmation if the End Consultation button is clicked */}
       {showConfirmation && consultationInfo && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded-md shadow-lg w-11/12 sm:w-1/2 lg:w-1/3">
@@ -230,23 +265,37 @@ const ChatPage: React.FC = () => {
 
             <div className="flex justify-end space-x-4 mt-4">
               <button
-                onClick={() => setShowConfirmation(false)} // Close the modal
-                className="w-full sm:w-1/3 bg-gray-500 text-xs text-white py-2 rounded-lg hover:bg-gray-600"
+                onClick={() => setShowConfirmation(false)}
+                disabled={loadingEndConsultation} // Disable button when loading
+                className={`w-full sm:w-1/3 text-xs py-2 rounded-lg ${
+                  loadingEndConsultation
+                    ? "bg-gray-400"
+                    : "bg-gray-500 hover:bg-gray-600"
+                } text-white`}
               >
                 Cancel
               </button>
+
               <button
                 onClick={confirmEndConsultation}
-                className="w-full sm:w-1/3 bg-red-600 text-xs text-white py-2 rounded-lg hover:bg-red-700"
+                disabled={loadingEndConsultation} // Disable button when loading
+                className={`w-full sm:w-1/3 text-xs py-2 rounded-lg ${
+                  loadingEndConsultation
+                    ? "bg-red-400"
+                    : "bg-red-600 hover:bg-red-700"
+                } text-white`}
               >
-                End Consultation
+                {loadingEndConsultation ? (
+                  <span className="spinner border-t-transparent border-white animate-spin inline-block w-4 h-4 border-2 rounded-full"></span>
+                ) : (
+                  "End Consultation"
+                )}
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* ChatMainContents is scrollable */}
       <div className="flex-grow overflow-y-auto">
         <ChatMainContents
           consultationId={Number(consultationId)}
@@ -255,7 +304,6 @@ const ChatPage: React.FC = () => {
         <div ref={messageEndRef} />
       </div>
 
-      {/* StickyMessageInput is fixed at the bottom */}
       <div className="shrink-0 fixed bottom-0 w-full bg-white">
         <StickyMessageInput
           onSendMessage={handleSendMessage}

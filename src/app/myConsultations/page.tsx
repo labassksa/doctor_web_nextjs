@@ -7,6 +7,8 @@ import { Consultation } from "../../models/consultation"; // Adjust the path as 
 import Sidebar from "../../components/sidebar/sidebar";
 import FullScreenButtons from "../../components/common/actions";
 import ChatMainContents from "../chat/_components/chatMainContent"; // Adjust the path as needed
+import { Router } from "express";
+import { useRouter } from "next/navigation";
 
 interface Message {
   id: number;
@@ -23,8 +25,13 @@ const MyDoctorConsultationsPage: React.FC = () => {
   const [selectedConsultation, setSelectedConsultation] =
     useState<Consultation | null>(null); // Track selected consultation
   const [messages, setMessages] = useState<Message[]>([]);
-
+  const router = useRouter();
   useEffect(() => {
+    const token = localStorage.getItem("labass_token");
+    if (!token) {
+      router.push("/login");
+    }
+
     const loadConsultations = async () => {
       try {
         const fetchedConsultations = await fetchDoctorConsultations();
@@ -45,7 +52,7 @@ const MyDoctorConsultationsPage: React.FC = () => {
   };
 
   if (loading) {
-    return <div>Loading consultations...</div>;
+    return <div className="spinner"></div>;
   }
 
   return (

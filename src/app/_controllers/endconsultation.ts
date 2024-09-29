@@ -2,7 +2,7 @@
 import { ConsultationEvents } from "@/types/consultationTypes";
 import axios from "axios";
 
-export const acceptConsultation = async (consultationId: number) => {
+export const endConsultation = async (consultationId: number) => {
   try {
     const token = localStorage.getItem("labass_token"); // Replace with your actual token retrieval method
     if (!token) {
@@ -11,7 +11,7 @@ export const acceptConsultation = async (consultationId: number) => {
 
     // Request body for accepting the consultation
     const requestBody = {
-      eventType: ConsultationEvents.DOCTOR_ACCEPTED,
+      eventType: ConsultationEvents.END_CONSULTATION,
     };
 
     // Make a PUT request to accept the consultation
@@ -28,7 +28,7 @@ export const acceptConsultation = async (consultationId: number) => {
     // Return the updated consultation data from the response
     return response.data;
   } catch (error) {
-    console.error("Error accepting consultation:", error);
+    console.error("Error ending the consultation:", error);
     throw error; // Re-throw the error so it can be handled by the component
   }
 };
