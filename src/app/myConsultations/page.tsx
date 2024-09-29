@@ -5,9 +5,6 @@ import MyConsultations from "./_components/MyConsultationCards"; // Adjust the p
 import { fetchDoctorConsultations } from "./_controller/myconsultations"; // Correct import path
 import { Consultation } from "../../models/consultation"; // Adjust the path as needed
 import Sidebar from "../../components/sidebar/sidebar";
-import FullScreenButtons from "../../components/common/actions";
-import ChatMainContents from "../chat/_components/chatMainContent"; // Adjust the path as needed
-import { Router } from "express";
 import { useRouter } from "next/navigation";
 
 interface Message {
