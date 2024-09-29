@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import TabComponent from "../../_presc-components/tabs";
 import Title from "../../_presc-components/title";
@@ -30,10 +30,28 @@ const PrescriptionPage: React.FC = () => {
     DrugHit | DiagnosisHit | null
   >(null);
 
+  // New state to hold drug data
+  const [drugs, setDrugs] = useState<DrugHit[]>([]);
+
   // State variables for loading, success, and error messages
   const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    const fetchDrugs = async () => {
+      try {
+        // Replace with your actual API call
+        const response = await fetch("/api/drugs");
+        const data: DrugHit[] = await response.json();
+        setDrugs(data);
+      } catch (error) {
+        console.error("Error fetching drugs:", error);
+      }
+    };
+
+    fetchDrugs();
+  }, []);
 
   const closeAllModals = () => setOpenModal(null);
 
@@ -90,23 +108,21 @@ const PrescriptionPage: React.FC = () => {
     setSelectedDiagnosis(updatedDiagnosis);
   };
 
-  // Open the confirmation modal
   const handleOpenConfirmationModal = () => {
     setConfirmationModalOpen(true);
   };
 
-  // Confirm prescription and send it to the server
   const handleConfirmPrescription = async () => {
-    const drugs = selectedDrugs.map((drug) => ({
+    const drugsToSend = selectedDrugs.map((drug) => ({
       drugName: drug["Trade Name"],
       activeIngredient: drug["Scientific Name"],
       strength: drug.Strength,
-      pharmaceuticalForm: "Capsule",
-      dose: "1",
-      doseUnit: "Capsule",
-      registrationNo: "XYZ-1234",
-      route: "Oral",
-      frequency: "3",
+      pharmaceuticalForm: drug.PharmaceuticalForm,
+      dose: drug.dose,
+      doseUnit: drug.StrengthUnit, // Dynamically use StrengthUnit
+      registrationNo: drug.RegisterNumber, // Dynamically use RegisterNumber
+      route: drug.AdministrationRoute, // Dynamically use AdministrationRoute
+      frequency: drug.frequency,
       indications: "Bacterial infection",
       duration: "7",
       durationUnit: "days",
@@ -117,30 +133,24 @@ const PrescriptionPage: React.FC = () => {
     );
     const allergies = selectedAllergies.map((allergy) => allergy["Trade Name"]);
 
-    // Start loading
     setIsLoading(true);
-    // Clear previous messages
     setSuccessMessage("");
     setErrorMessage("");
 
     try {
       const result = await issueOrUpdatePrescription(
         Number(consultationId),
-        drugs,
+        drugsToSend,
         diagnoses,
         allergies
       );
       console.log("Prescription result:", result);
-      // Set success message
-      setSuccessMessage("تم إصدار الوصفة الطبية بنجاح.");
+      setSuccessMessage("The prescription is issued and sent to the patient");
     } catch (error) {
       console.error("Error issuing prescription:", error);
-      // Set error message
-      setErrorMessage(`error issuing/updating the prescription ${error}`);
+      setErrorMessage(`Error issuing/updating the prescription ${error}`);
     } finally {
-      // Stop loading
       setIsLoading(false);
-      // Close confirmation modal
       setConfirmationModalOpen(false);
     }
   };
@@ -158,7 +168,7 @@ const PrescriptionPage: React.FC = () => {
           key={index}
           className="p-2 border rounded mt-2 text-black flex justify-between items-center text-sm sm:text-base"
         >
-          <span className="flex-grow break-words">{`${drug["Scientific Name"]} (${drug["Trade Name"]}) - ROUTE: ${drug.AdministrationRoute} STRENGTHUNIT: ${drug.StrengthUnit}`}</span>
+          <span className="flex-grow break-words">{`${drug["Scientific Name"]} (${drug["Trade Name"]}) - ROUTE: ${drug.AdministrationRoute} STRENGTH: ${drug.Strength} ${drug.StrengthUnit}`}</span>
           <button
             onClick={() => handleRemoveDrug(index)}
             className="text-red-500 ml-4 flex-shrink-0"
@@ -244,7 +254,7 @@ const PrescriptionPage: React.FC = () => {
       {/* Render Loading Indicator */}
       {isLoading && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="text-white text-xl">issuing prescription ...</div>
+          <div className="text-white text-xl">Issuing prescription ...</div>
         </div>
       )}
 
