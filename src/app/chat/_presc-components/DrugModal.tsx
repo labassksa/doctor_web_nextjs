@@ -20,7 +20,7 @@ const DrugModal: React.FC<DrugModalProps> = ({ isOpen, onClose, onAdd }) => {
   const [route, setRoute] = useState("");
   const [frequency, setFrequency] = useState("");
   const [duration, setDuration] = useState("");
-  const [durationUnit, setDurationUnit] = useState("");
+  const [durationUnit, setDurationUnit] = useState("days");
   const [indications, setIndications] = useState("");
   const [orderInstructions, setOrderInstructions] = useState("");
   const [pharmaceuticalForm, setPharmaceuticalForm] = useState("");
@@ -28,27 +28,43 @@ const DrugModal: React.FC<DrugModalProps> = ({ isOpen, onClose, onAdd }) => {
   const [strength, setStrength] = useState("");
   const [prn, setPrn] = useState(false);
 
-  const handleSelect = (item: DrugHit) => {
-    console.log("Selected item:", item);
+  // Error state for required fields
+  const [errors, setErrors] = useState({
+    dose: false,
+    unit: false,
+    route: false,
+    frequency: false,
+    duration: false,
+    indications: false,
+  });
 
+  const handleSelect = (item: DrugHit) => {
     setCurrentSelection(item);
     setPharmaceuticalForm(item.PharmaceuticalForm || "");
     setActiveIngredients(item["Scientific Name"] || "");
     setStrength(item.Strength || "");
     setRoute(item.AdministrationRoute || "");
+    setUnit(item.StrengthUnit || "");
   };
 
   const handleAdd = () => {
-    if (
-      currentSelection &&
-      dose &&
-      unit &&
-      route &&
-      frequency &&
-      duration &&
-      durationUnit &&
-      indications
-    ) {
+    const newErrors = {
+      dose: !dose,
+      unit: !unit,
+      route: !route,
+      frequency: !frequency,
+      duration: !duration,
+      indications: !indications,
+    };
+
+    setErrors(newErrors);
+
+    // Prevent submission if any error exists
+    if (Object.values(newErrors).some((error) => error)) {
+      return;
+    }
+
+    if (currentSelection) {
       const newDrug = {
         ...currentSelection,
         dose,
@@ -82,6 +98,7 @@ const DrugModal: React.FC<DrugModalProps> = ({ isOpen, onClose, onAdd }) => {
         indexName="drugs"
       />
       <div className="mt-4 space-y-4">
+        {/* Auto-populated fields */}
         <div>
           <label className="block text-sm font-medium text-gray-700">
             Pharmaceutical Form
@@ -115,6 +132,8 @@ const DrugModal: React.FC<DrugModalProps> = ({ isOpen, onClose, onAdd }) => {
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm bg-gray-100 sm:text-sm"
           />
         </div>
+
+        {/* Required fields with validation */}
         <div>
           <label className="block text-sm font-medium text-gray-700">
             Dose *
@@ -124,8 +143,13 @@ const DrugModal: React.FC<DrugModalProps> = ({ isOpen, onClose, onAdd }) => {
             value={dose}
             onChange={(e) => setDose(e.target.value)}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            placeholder="Enter dose"
           />
+          {errors.dose && (
+            <p className="text-red-500 text-sm">Dose is required</p>
+          )}
         </div>
+
         <div>
           <label className="block text-sm font-medium text-gray-700">
             Unit *
@@ -144,8 +168,18 @@ const DrugModal: React.FC<DrugModalProps> = ({ isOpen, onClose, onAdd }) => {
             <option value="gm">gm</option>
             <option value="DF">DF</option>
             <option value="dose">dose</option>
+
+            {/* Dynamically add populated value if it doesn't match predefined options */}
+            {unit &&
+              !["mg", "ml", "g", "l", "IU", "gm", "DF", "dose"].includes(
+                unit
+              ) && <option value={unit}>{unit}</option>}
           </select>
+          {errors.unit && (
+            <p className="text-red-500 text-sm">Unit is required</p>
+          )}
         </div>
+
         <div>
           <label className="block text-sm font-medium text-gray-700">
             Route *
@@ -158,9 +192,17 @@ const DrugModal: React.FC<DrugModalProps> = ({ isOpen, onClose, onAdd }) => {
             <option value="">Select Drug Route</option>
             <option value="oral">Oral</option>
             <option value="iv">IV</option>
-            {/* Add other routes as needed */}
+
+            {/* Dynamically add populated value if it doesn't match predefined options */}
+            {route && !["oral", "iv"].includes(route) && (
+              <option value={route}>{route}</option>
+            )}
           </select>
+          {errors.route && (
+            <p className="text-red-500 text-sm">Route is required</p>
+          )}
         </div>
+
         <div>
           <label className="block text-sm font-medium text-gray-700">
             Frequency *
@@ -181,7 +223,11 @@ const DrugModal: React.FC<DrugModalProps> = ({ isOpen, onClose, onAdd }) => {
             <option value="as needed">As needed</option>
             <option value="at evening">At evening</option>
           </select>
+          {errors.frequency && (
+            <p className="text-red-500 text-sm">Frequency is required</p>
+          )}
         </div>
+
         <div>
           <label className="block text-sm font-medium text-gray-700">
             Duration *
@@ -191,8 +237,13 @@ const DrugModal: React.FC<DrugModalProps> = ({ isOpen, onClose, onAdd }) => {
             value={duration}
             onChange={(e) => setDuration(e.target.value)}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            placeholder="Enter duration"
           />
+          {errors.duration && (
+            <p className="text-red-500 text-sm">Duration is required</p>
+          )}
         </div>
+
         <div>
           <label className="block text-sm font-medium text-gray-700">
             Duration Unit *
@@ -208,6 +259,7 @@ const DrugModal: React.FC<DrugModalProps> = ({ isOpen, onClose, onAdd }) => {
             <option value="months">Months</option>
           </select>
         </div>
+
         <div>
           <label className="block text-sm font-medium text-gray-700">
             Indications *
@@ -217,8 +269,14 @@ const DrugModal: React.FC<DrugModalProps> = ({ isOpen, onClose, onAdd }) => {
             value={indications}
             onChange={(e) => setIndications(e.target.value)}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            placeholder="Enter indications"
           />
+          {errors.indications && (
+            <p className="text-red-500 text-sm">Indications are required</p>
+          )}
         </div>
+
+        {/* Optional fields */}
         <div>
           <label className="block text-sm font-medium text-gray-700">
             Instructions
@@ -228,8 +286,10 @@ const DrugModal: React.FC<DrugModalProps> = ({ isOpen, onClose, onAdd }) => {
             value={orderInstructions}
             onChange={(e) => setOrderInstructions(e.target.value)}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            placeholder="Enter order instructions"
           />
         </div>
+
         <div className="flex items-center">
           <input
             type="checkbox"

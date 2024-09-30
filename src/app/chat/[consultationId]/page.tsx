@@ -22,6 +22,7 @@ interface Message {
 const ChatPage: React.FC = () => {
   const [status, setStatus] = useState("");
   const [doctorInfo, setDoctorInfo] = useState<any>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null); // Add state for error messages
   const [consultationInfo, setConsultationInfo] = useState<any>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
@@ -49,24 +50,21 @@ const ChatPage: React.FC = () => {
     const fetchConsultation = async () => {
       if (!consultationId) return;
 
-      const consultation = await getConsultationById(Number(consultationId));
+      const result = await getConsultationById(Number(consultationId));
 
-      if (consultation && consultation.status) {
+      if (result.error) {
+        // Handle the error
+        setErrorMessage(result.error);
+      } else {
+        // Handle successful consultation fetch
         setStatus(
-          consultation.status === ConsultationStatus.Paid
+          result.status === ConsultationStatus.Paid
             ? ConsultationStatus.Paid
-            : consultation.status === ConsultationStatus.Open
+            : result.status === ConsultationStatus.Open
             ? ConsultationStatus.Open
-            : consultation.status
+            : result.status
         );
-
-        if (consultation.doctor && consultation.doctor.user) {
-          setDoctorInfo(consultation.doctor);
-        } else {
-          setDoctorInfo(null);
-        }
-
-        setConsultationInfo(consultation);
+        setConsultationInfo(result);
       }
     };
 
@@ -239,12 +237,15 @@ const ChatPage: React.FC = () => {
           </h2>
 
           {consultationInfo && (
-            <div className="antialiased flex flex-row">
-              <p className="antialiased px-2 text-xs text-gray-700">
+            <div className=" flex flex-row">
+              <p className=" px-2 text-sm text-gray-700">
                 Patient Name:{" "}
+                {consultationInfo.patient?.user?.lastName || "N/A"}
+              </p>
+              <p className="  text-sm text-gray-700">
                 {consultationInfo.patient?.user?.firstName || "N/A"}
               </p>
-              <p className="text-xs px-2 text-gray-700">
+              <p className="text-sm px-2 text-gray-700">
                 Patient Age:{" "}
                 {consultationInfo.patient?.user?.dateOfBirth
                   ? calculateAge(consultationInfo.patient?.user?.dateOfBirth)

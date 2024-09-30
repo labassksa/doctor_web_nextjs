@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useParams } from "next/navigation";
 import TabComponent from "../../_presc-components/tabs";
 import Title from "../../_presc-components/title";
@@ -30,28 +30,10 @@ const PrescriptionPage: React.FC = () => {
     DrugHit | DiagnosisHit | null
   >(null);
 
-  // New state to hold drug data
-  const [drugs, setDrugs] = useState<DrugHit[]>([]);
-
   // State variables for loading, success, and error messages
   const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-
-  useEffect(() => {
-    const fetchDrugs = async () => {
-      try {
-        // Replace with your actual API call
-        const response = await fetch("/api/drugs");
-        const data: DrugHit[] = await response.json();
-        setDrugs(data);
-      } catch (error) {
-        console.error("Error fetching drugs:", error);
-      }
-    };
-
-    fetchDrugs();
-  }, []);
 
   const closeAllModals = () => setOpenModal(null);
 
@@ -63,8 +45,58 @@ const PrescriptionPage: React.FC = () => {
     setCurrentSelection(item);
 
   const handleAddDrug = (drug: DrugHit) => {
-    setSelectedDrugs([...selectedDrugs, drug]);
+    setSelectedDrugs([...selectedDrugs, drug]); // This now includes indications, dose, duration, etc.
     closeAllModals();
+  };
+
+  const handleConfirmPrescription = async () => {
+    const drugs = selectedDrugs.map((drug) => ({
+      drugName: drug["Trade Name"],
+      activeIngredient: drug["Scientific Name"],
+      strength: drug.Strength,
+      pharmaceuticalForm: drug.PharmaceuticalForm,
+      dose: drug.dose, // Use the dynamically entered dose from DrugModal
+      doseUnit: drug.StrengthUnit, // Use the dynamically entered unit from DrugModal
+      registrationNo: drug.RegisterNumber,
+      route: drug.AdministrationRoute, // Use the dynamically entered route from DrugModal
+      frequency: drug.frequency, // Use the dynamically entered frequency from DrugModal
+      indications: drug.indications, // Use the dynamically entered indications from DrugModal
+      duration: drug.duration, // Use the dynamically entered duration from DrugModal
+      durationUnit: drug.durationUnit, // Use the dynamically entered duration unit from DrugModal
+      prn: drug.prn, // Use the dynamically entered prn from DrugModal
+    }));
+
+    const diagnoses = selectedDiagnosis.map(
+      (diagnosis) => diagnosis.ascii_desc
+    );
+    const allergies = selectedAllergies.map((allergy) => allergy["Trade Name"]);
+
+    // Start loading
+    setIsLoading(true);
+    // Clear previous messages
+    setSuccessMessage("");
+    setErrorMessage("");
+
+    try {
+      const result = await issueOrUpdatePrescription(
+        Number(consultationId),
+        drugs,
+        diagnoses,
+        allergies
+      );
+      console.log("Prescription result:", result);
+      // Set success message
+      setSuccessMessage("The prescription is issued and sent to the patient");
+    } catch (error) {
+      console.error("Error issuing prescription:", error);
+      // Set error message
+      setErrorMessage(`Error issuing/updating the prescription: ${error}`);
+    } finally {
+      // Stop loading
+      setIsLoading(false);
+      // Close confirmation modal
+      setConfirmationModalOpen(false);
+    }
   };
 
   const handleAddDiagnosis = (diagnosis: DiagnosisHit) => {
@@ -108,52 +140,61 @@ const PrescriptionPage: React.FC = () => {
     setSelectedDiagnosis(updatedDiagnosis);
   };
 
+  // Open the confirmation modal
   const handleOpenConfirmationModal = () => {
     setConfirmationModalOpen(true);
   };
 
-  const handleConfirmPrescription = async () => {
-    const drugsToSend = selectedDrugs.map((drug) => ({
-      drugName: drug["Trade Name"],
-      activeIngredient: drug["Scientific Name"],
-      strength: drug.Strength,
-      pharmaceuticalForm: drug.PharmaceuticalForm,
-      dose: drug.dose,
-      doseUnit: drug.StrengthUnit, // Dynamically use StrengthUnit
-      registrationNo: drug.RegisterNumber, // Dynamically use RegisterNumber
-      route: drug.AdministrationRoute, // Dynamically use AdministrationRoute
-      frequency: drug.frequency,
-      indications: "Bacterial infection",
-      duration: "7",
-      durationUnit: "days",
-      prn: false,
-    }));
-    const diagnoses = selectedDiagnosis.map(
-      (diagnosis) => diagnosis.ascii_desc
-    );
-    const allergies = selectedAllergies.map((allergy) => allergy["Trade Name"]);
+  // // Confirm prescription and send it to the server
+  // const handleConfirmPrescription = async () => {
+  //   const drugs = selectedDrugs.map((drug) => ({
+  //     drugName: drug["Trade Name"], // Dynamic: Trade Name from selected drug
+  //     activeIngredient: drug["Scientific Name"], // Dynamic: Scientific Name from selected drug
+  //     strength: drug.Strength, // Dynamic: Strength from selected drug
+  //     pharmaceuticalForm: drug.PharmaceuticalForm, // Dynamic: Pharmaceutical Form from selected drug
+  //     dose: "1", // Keeping as hardcoded, change if needed
+  //     doseUnit: drug.StrengthUnit, // Dynamic: Strength Unit from selected drug
+  //     registrationNo: drug.RegisterNumber, // Dynamic: Register Number from selected drug
+  //     route: drug.AdministrationRoute, // Dynamic: Administration Route from selected drug
+  //     frequency: "3", // Keeping as hardcoded, change if needed
+  //     indications: "Bacterial infection", // Keeping as hardcoded, change if needed
+  //     duration: "7", // Keeping as hardcoded, change if needed
+  //     durationUnit: "days", // Keeping as hardcoded, change if needed
+  //     prn: false, // Keeping as hardcoded, change if needed
+  //   }));
 
-    setIsLoading(true);
-    setSuccessMessage("");
-    setErrorMessage("");
+  //   const diagnoses = selectedDiagnosis.map(
+  //     (diagnosis) => diagnosis.ascii_desc
+  //   );
+  //   const allergies = selectedAllergies.map((allergy) => allergy["Trade Name"]);
 
-    try {
-      const result = await issueOrUpdatePrescription(
-        Number(consultationId),
-        drugsToSend,
-        diagnoses,
-        allergies
-      );
-      console.log("Prescription result:", result);
-      setSuccessMessage("The prescription is issued and sent to the patient");
-    } catch (error) {
-      console.error("Error issuing prescription:", error);
-      setErrorMessage(`Error issuing/updating the prescription ${error}`);
-    } finally {
-      setIsLoading(false);
-      setConfirmationModalOpen(false);
-    }
-  };
+  //   // Start loading
+  //   setIsLoading(true);
+  //   // Clear previous messages
+  //   setSuccessMessage("");
+  //   setErrorMessage("");
+
+  //   try {
+  //     const result = await issueOrUpdatePrescription(
+  //       Number(consultationId),
+  //       drugs,
+  //       diagnoses,
+  //       allergies
+  //     );
+  //     console.log("Prescription result:", result);
+  //     // Set success message
+  //     setSuccessMessage("The prescription is issued and sent to the patient");
+  //   } catch (error) {
+  //     console.error("Error issuing prescription:", error);
+  //     // Set error message
+  //     setErrorMessage(`Error issuing/updating the prescription: ${error}`);
+  //   } finally {
+  //     // Stop loading
+  //     setIsLoading(false);
+  //     // Close confirmation modal
+  //     setConfirmationModalOpen(false);
+  //   }
+  // };
 
   return (
     <div className="pt-20 flex-grow p-4 sm:p-6 lg:p-8 text-black relative">
@@ -168,7 +209,7 @@ const PrescriptionPage: React.FC = () => {
           key={index}
           className="p-2 border rounded mt-2 text-black flex justify-between items-center text-sm sm:text-base"
         >
-          <span className="flex-grow break-words">{`${drug["Scientific Name"]} (${drug["Trade Name"]}) - ROUTE: ${drug.AdministrationRoute} STRENGTH: ${drug.Strength} ${drug.StrengthUnit}`}</span>
+          <span className="flex-grow break-words">{`${drug["Scientific Name"]} (${drug["Trade Name"]}) - ROUTE: ${drug.AdministrationRoute} STRENGTHUNIT: ${drug.StrengthUnit}`}</span>
           <button
             onClick={() => handleRemoveDrug(index)}
             className="text-red-500 ml-4 flex-shrink-0"
@@ -254,7 +295,7 @@ const PrescriptionPage: React.FC = () => {
       {/* Render Loading Indicator */}
       {isLoading && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="text-white text-xl">Issuing prescription ...</div>
+          <div className="text-white text-xl">issuing prescription ...</div>
         </div>
       )}
 
