@@ -145,62 +145,11 @@ const PrescriptionPage: React.FC = () => {
     setConfirmationModalOpen(true);
   };
 
-  // // Confirm prescription and send it to the server
-  // const handleConfirmPrescription = async () => {
-  //   const drugs = selectedDrugs.map((drug) => ({
-  //     drugName: drug["Trade Name"], // Dynamic: Trade Name from selected drug
-  //     activeIngredient: drug["Scientific Name"], // Dynamic: Scientific Name from selected drug
-  //     strength: drug.Strength, // Dynamic: Strength from selected drug
-  //     pharmaceuticalForm: drug.PharmaceuticalForm, // Dynamic: Pharmaceutical Form from selected drug
-  //     dose: "1", // Keeping as hardcoded, change if needed
-  //     doseUnit: drug.StrengthUnit, // Dynamic: Strength Unit from selected drug
-  //     registrationNo: drug.RegisterNumber, // Dynamic: Register Number from selected drug
-  //     route: drug.AdministrationRoute, // Dynamic: Administration Route from selected drug
-  //     frequency: "3", // Keeping as hardcoded, change if needed
-  //     indications: "Bacterial infection", // Keeping as hardcoded, change if needed
-  //     duration: "7", // Keeping as hardcoded, change if needed
-  //     durationUnit: "days", // Keeping as hardcoded, change if needed
-  //     prn: false, // Keeping as hardcoded, change if needed
-  //   }));
-
-  //   const diagnoses = selectedDiagnosis.map(
-  //     (diagnosis) => diagnosis.ascii_desc
-  //   );
-  //   const allergies = selectedAllergies.map((allergy) => allergy["Trade Name"]);
-
-  //   // Start loading
-  //   setIsLoading(true);
-  //   // Clear previous messages
-  //   setSuccessMessage("");
-  //   setErrorMessage("");
-
-  //   try {
-  //     const result = await issueOrUpdatePrescription(
-  //       Number(consultationId),
-  //       drugs,
-  //       diagnoses,
-  //       allergies
-  //     );
-  //     console.log("Prescription result:", result);
-  //     // Set success message
-  //     setSuccessMessage("The prescription is issued and sent to the patient");
-  //   } catch (error) {
-  //     console.error("Error issuing prescription:", error);
-  //     // Set error message
-  //     setErrorMessage(`Error issuing/updating the prescription: ${error}`);
-  //   } finally {
-  //     // Stop loading
-  //     setIsLoading(false);
-  //     // Close confirmation modal
-  //     setConfirmationModalOpen(false);
-  //   }
-  // };
-
   return (
     <div className="pt-20 flex-grow p-4 sm:p-6 lg:p-8 text-black relative">
       <TabComponent />
       <Title />
-      <PatientInfo />
+      {/* <PatientInfo /> */}
 
       {/* Drug Section */}
       <ActionButton label="Drugs" onClick={openDrugModal} />
