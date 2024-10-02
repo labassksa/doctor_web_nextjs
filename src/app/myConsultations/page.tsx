@@ -24,7 +24,7 @@ const MyDoctorConsultationsPage: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const router = useRouter();
   useEffect(() => {
-    const token = localStorage.getItem("labass_token");
+    const token = localStorage.getItem("labass_doctor_token");
     if (!token) {
       router.push("/login");
     }

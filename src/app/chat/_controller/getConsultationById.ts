@@ -6,7 +6,7 @@ export const getConsultationById = async (consultationId: number) => {
   );
 
   // Retrieve the token
-  const token = localStorage.getItem("labass_token");
+  const token = localStorage.getItem("labass_doctor_token");
   if (!token) {
     console.error("No token found");
     return { error: "No token found. Please log in." }; // Return an error object

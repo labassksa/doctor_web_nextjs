@@ -1,5 +1,5 @@
-import { Consultation } from './consultation';
-import User from './user';
+import { Consultation } from "./consultation";
+import User from "./user";
 
 export class DoctorProfile {
   id: number;
@@ -9,8 +9,21 @@ export class DoctorProfile {
   iban?: string;
   consultations?: Consultation[];
 
-  constructor({ id, specialty, medicalLicenseNumber, user, iban = "", consultations = [] }: 
-    { id: number; specialty: string; medicalLicenseNumber: string; user: User; iban?: string; consultations?: Consultation[] }) {
+  constructor({
+    id,
+    specialty,
+    medicalLicenseNumber,
+    user,
+    iban = "",
+    consultations = [],
+  }: {
+    id: number;
+    specialty: string;
+    medicalLicenseNumber: string;
+    user: User;
+    iban?: string;
+    consultations?: Consultation[];
+  }) {
     this.id = id;
     this.specialty = specialty;
     this.medicalLicenseNumber = medicalLicenseNumber;

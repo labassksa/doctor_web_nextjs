@@ -7,7 +7,7 @@ export const issueOrUpdatePrescription = async (
   allergies: string[]
 ) => {
   try {
-    const token = localStorage.getItem("labass_token"); // Replace with your actual token retrieval method
+    const token = localStorage.getItem("labass_doctor_token"); // Replace with your actual token retrieval method
     console.log(`token : ${token}`);
     if (!token) {
       throw new Error("No token found");

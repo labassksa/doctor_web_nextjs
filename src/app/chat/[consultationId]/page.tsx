@@ -33,8 +33,8 @@ const ChatPage: React.FC = () => {
   const messageEndRef = useRef<HTMLDivElement>(null);
   const consultationId = params.consultationId;
   const websocketURL = process.env.NEXT_PUBLIC_WEBSOCKET_URL || "";
-  const token = localStorage.getItem("labass_token");
-  const userId = localStorage.getItem("labass_userId");
+  const token = localStorage.getItem("labass_doctor_token");
+  const userId = localStorage.getItem("labass_doctor_userId");
 
   const statusClass = `inline-block px-4 mx-2 py-1 rounded-full text-xs font-medium ${
     status === ConsultationStatus.Open

@@ -4,7 +4,7 @@ import axios from "axios";
 
 export const endConsultation = async (consultationId: number) => {
   try {
-    const token = localStorage.getItem("labass_token"); // Replace with your actual token retrieval method
+    const token = localStorage.getItem("labass_doctor_token"); // Replace with your actual token retrieval method
     if (!token) {
       throw new Error("No token found");
     }

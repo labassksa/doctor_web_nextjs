@@ -22,8 +22,8 @@ const StickyMessageInput: React.FC<StickyMessageInputProps> = ({
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
-  const token = localStorage.getItem("labass_token");
-  const userId = localStorage.getItem("labass_userId");
+  const token = localStorage.getItem("labass_doctor_token");
+  const userId = localStorage.getItem("labass_doctor_userId");
 
   // Focus input field
   const handleFocus = () => {
@@ -61,7 +61,9 @@ const StickyMessageInput: React.FC<StickyMessageInputProps> = ({
           {
             headers: {
               "Content-Type": "multipart/form-data",
-              Authorization: `Bearer ${localStorage.getItem("labass_token")}`, // JWT token
+              Authorization: `Bearer ${localStorage.getItem(
+                "labass_doctor_token"
+              )}`, // JWT token
             },
           }
         );
