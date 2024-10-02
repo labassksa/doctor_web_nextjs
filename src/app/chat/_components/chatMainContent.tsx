@@ -32,7 +32,7 @@ const ChatMainContents: React.FC<ChatMainContentsProps> = ({
   // Retrieve the current userId from localStorage
   const userId =
     typeof window !== "undefined"
-      ? localStorage.getItem("labass_userId")
+      ? localStorage.getItem("labass_doctor_userId")
       : null;
 
   return (

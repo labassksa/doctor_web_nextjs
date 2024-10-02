@@ -51,7 +51,7 @@ const StickyMessageInput: React.FC<StickyMessageInputProps> = ({
       formData.append("file", selectedFile);
       formData.append(
         "senderId",
-        String(Number(localStorage.getItem("labass_userId")))
+        String(Number(localStorage.getItem("labass_doctor_userId")))
       ); // Use localStorage for senderId
       formData.append("consultationId", String(Number(consultationId))); // Use localStorage for consultationId
       try {
