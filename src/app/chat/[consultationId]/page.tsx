@@ -102,9 +102,25 @@ const ChatPage: React.FC = () => {
     };
 
     socket.on("receiveMessage", handleReceiveMessage);
+    // Listen for the message status (read status) update
+    const handleMessageStatus = ({
+      messageId,
+      read,
+    }: {
+      messageId: string;
+      read: boolean;
+    }) => {
+      setMessages((prevMessages) =>
+        prevMessages.map((msg) =>
+          msg.id === messageId ? { ...msg, read } : msg
+        )
+      );
+    };
 
+    socket.on("messageStatus", handleMessageStatus);
     return () => {
       socket.off("receiveMessage", handleReceiveMessage);
+      socket.off("messageStatus", handleMessageStatus); // Cleanup messageStatus listener
     };
   }, [socket, userId, consultationId]);
 
