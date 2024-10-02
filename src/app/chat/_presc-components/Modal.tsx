@@ -21,7 +21,7 @@ const Modal: React.FC<ModalProps> = ({
 
   return (
     <div className=" z-50 flex items-center justify-center">
-      <div className=" fixed top-16 inset-0 bg-white w-full h-full overflow-y-auto">
+      <div className=" fixed top-16 mb-2 inset-0 bg-white w-full h-full overflow-y-auto">
         <div className="p-4">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold">{title}</h2>

@@ -133,6 +133,28 @@ const ChatPage: React.FC = () => {
       };
 
       setMessages((prevMessages) => [...prevMessages, newFileMessage]);
+      // Emit the sendMessage event with file information
+      socket.emit(
+        "sendMessage",
+        {
+          room: `${consultationId}`,
+          message: "", // No text for file message
+          consultationId: Number(consultationId),
+          senderId: Number(userId),
+          attachmentUrl: fileMessage.attachmentUrl,
+          attachmentType: fileMessage.attachmentType,
+        },
+        (response: { messageId: string }) => {
+          // Update message with the correct messageId once confirmed by the backend
+          setMessages((prevMessages) =>
+            prevMessages.map((msg) =>
+              msg === newFileMessage
+                ? { ...msg, id: response.messageId, isSent: true }
+                : msg
+            )
+          );
+        }
+      );
     } else {
       const newMessage: Message = {
         message: messageText,
