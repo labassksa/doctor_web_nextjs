@@ -20,8 +20,8 @@ export const verifyOTPandLogin = async (
       const { userId, token, refreshToken } = response.data.authResponse;
 
       // Store the token and userId in localStorage
-      localStorage.setItem("labass_token", token);
-      localStorage.setItem("labass_userId", userId);
+      localStorage.setItem("labass_doctor_token", token);
+      localStorage.setItem("labass_doctor_userId", userId);
 
       console.log(`Stored userId: ${userId}`);
       console.log(`Stored token: ${token}`);
