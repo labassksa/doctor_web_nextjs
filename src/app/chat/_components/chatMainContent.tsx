@@ -1,7 +1,9 @@
 "use client";
 import React, { useEffect, useRef } from "react";
+import VoiceNotePlayer from "./voiceNotePlayer";
 
 interface Message {
+  recordedTime?: string;
   message?: string;
   senderId: number;
   consultationId: number;
@@ -36,7 +38,7 @@ const ChatMainContents: React.FC<ChatMainContentsProps> = ({
       : null;
 
   return (
-    <div className="flex flex-col h-full bg-gray-100 text-black w-full mb-16 mt-24 ">
+    <div className="flex flex-col h-full bg-gray-100 text-black w-full mb-16 mt-24">
       <div
         className="flex-grow overflow-y-auto p-4 bg-gray-100 text-xs mt-0 w-full"
         dir="rtl"
@@ -52,7 +54,17 @@ const ChatMainContents: React.FC<ChatMainContentsProps> = ({
             }`}
           >
             {message.attachmentUrl ? (
-              message.attachmentType === "images" ? (
+              // Check if the attachment is a voice note
+              message.attachmentType === "voiceNotes" ? (
+                <VoiceNotePlayer
+                  audioUrl={message.attachmentUrl}
+                  recordedTime={
+                    message.recordedTime != null
+                      ? message.recordedTime // Proper conversion of recordedTime
+                      : "12" // No fallback to 3, use null if unavailable
+                  }
+                />
+              ) : message.attachmentType === "images" ? (
                 <img
                   src={message.attachmentUrl}
                   alt="attachment"
