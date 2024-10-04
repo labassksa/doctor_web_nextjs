@@ -82,64 +82,87 @@ const StickyMessageInput: React.FC<StickyMessageInputProps> = ({
 
   // Handle voice recording
   const startRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
+    // Ensure that the media recorder is not already running
+    if (!mediaRecorderRef.current) {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+        });
+        const mediaRecorder = new MediaRecorder(stream);
 
-      mediaRecorderRef.current = mediaRecorder;
-      audioChunksRef.current = [];
+        mediaRecorderRef.current = mediaRecorder;
+        audioChunksRef.current = [];
 
-      mediaRecorder.ondataavailable = (event) => {
-        audioChunksRef.current.push(event.data); // Collect audio chunks
-      };
+        mediaRecorder.ondataavailable = (event) => {
+          audioChunksRef.current.push(event.data); // Collect audio chunks
+        };
 
-      mediaRecorder.start();
-      setIsRecording(true);
-      setRecordingMessage("Recording..."); // UI feedback
-    } catch (error) {
-      console.error("Voice recording failed:", error);
-      setRecordingMessage("Recording failed. Please try again.");
+        mediaRecorder.start();
+        setIsRecording(true);
+        setRecordingMessage("Recording..."); // UI feedback
+      } catch (error) {
+        console.error("Voice recording failed:", error);
+        setRecordingMessage("Recording failed. Please try again.");
+      }
     }
   };
 
   const stopRecording = async () => {
     if (mediaRecorderRef.current) {
       mediaRecorderRef.current.stop();
-      setIsRecording(false);
 
       mediaRecorderRef.current.onstop = async () => {
         const audioBlob = new Blob(audioChunksRef.current, {
-          type: "audio/webm",
+          type: "audio/mp4",
         });
 
+        setIsRecording(false); // Ensure this happens immediately after stopping the recording
+
         if (audioBlob) {
-          setIsUploading(true); // Show spinner while uploading
+          // Create an object URL for the audio file to calculate its duration
+          const audioUrl = URL.createObjectURL(audioBlob);
+          const audio = new Audio(audioUrl);
 
-          const formData = new FormData();
-          formData.append("file", audioBlob, "voice_note.webm");
-          formData.append("senderId", String(Number(userId)));
-          formData.append("consultationId", String(consultationId));
+          // Wait for the audio metadata to load so we can get the duration
+          audio.onloadedmetadata = async () => {
+            const recordedTime = audio.duration; // Duration in seconds
+            setIsUploading(true); // Show spinner while uploading
 
-          try {
-            const response = await axios.post(
-              `${process.env.NEXT_PUBLIC_API_URL}/upload-consultation-attachment`,
-              formData,
-              {
-                headers: {
-                  "Content-Type": "multipart/form-data",
-                  Authorization: `Bearer ${token}`,
-                },
-              }
-            );
+            const formData = new FormData();
+            formData.append("file", audioBlob, "voice_note.mp4");
+            formData.append("senderId", String(Number(userId)));
+            formData.append("consultationId", String(consultationId));
+            formData.append("recordedTime", String(Number(recordedTime))); // Add recorded time
 
-            // Send the voice note to the parent
-            onSendMessage("", response.data.chat);
-            setIsUploading(false); // Hide spinner
-          } catch (error) {
-            console.error("Voice note upload failed:", error);
-            setIsUploading(false); // Hide spinner on error
-          }
+            console.log(`recoreded TIme in STOPRecording: ${recordedTime}`);
+            try {
+              const response = await axios.post(
+                `${process.env.NEXT_PUBLIC_API_URL}/upload-consultation-attatchment`,
+                formData,
+                {
+                  headers: {
+                    "Content-Type": "multipart/form-data",
+                    Authorization: `Bearer ${token}`,
+                  },
+                }
+              );
+              console.log(
+                "Received response from backend:",
+                response.data.chat.recordedTime
+              );
+
+              // Send the voice note to the parent, including the response from the backend
+              onSendMessage("", response.data.chat);
+              setIsUploading(false); // Hide spinner
+            } catch (error) {
+              console.error("Voice note upload failed:", error);
+              setIsUploading(false); // Hide spinner on error
+            }
+          };
         }
+
+        // Reset the media recorder after the recording stops
+        mediaRecorderRef.current = null;
       };
     }
   };
