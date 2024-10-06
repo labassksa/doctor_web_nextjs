@@ -17,6 +17,9 @@ interface Message {
   consultationId: number;
   isSent: boolean;
   read: boolean;
+  attachmentUrl?: string;
+  attachmentType?: string;
+  recordedTime?: string;
 }
 
 const ChatPage: React.FC = () => {
@@ -254,9 +257,7 @@ const ChatPage: React.FC = () => {
 
         <div
           className={`fixed bg-white w-full border-b border-gray-200 ${
-            status === ConsultationStatus.Open || ConsultationStatus.Open
-              ? "mt-16"
-              : ""
+            status === ConsultationStatus.Open ? "mt-16" : ""
           }`}
         >
           {/* Conditionally show the End Consultation Button only if the consultation is Open */}
