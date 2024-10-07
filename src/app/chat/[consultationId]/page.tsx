@@ -54,6 +54,9 @@ const ChatPage: React.FC = () => {
       ? "bg-red-100 text-red-700 mb-1"
       : "bg-gray-200 text-gray-700 mb-1"
   }`;
+  const handleBackToFeed = () => {
+    router.push("/"); // Navigate back to Feed page
+  };
 
   useEffect(() => {
     const fetchConsultation = async () => {
@@ -270,6 +273,15 @@ const ChatPage: React.FC = () => {
 
       <div className="flex flex-col min-h-screen bg-gray-100">
         <div className="fixed bg-white w-full border-b border-gray-200 mt-16">
+          <div className="p-2">
+            <button
+              onClick={handleBackToFeed}
+              className="text-blue-500 text-xs hover:underline"
+            >
+              Back to Feed
+            </button>
+          </div>
+
           {/* Conditionally show the Accept or End Consultation Button */}
           {status === ConsultationStatus.Paid && (
             <div className="p-2">
