@@ -16,7 +16,7 @@ const TabComponent: React.FC = () => {
   ];
 
   return (
-    <div className="fixed top-0 left-0 w-full bg-white shadow-sm text-xs z-50 h-16">
+    <div className="fixed top-0 left-0 w-full bg-white  text-xs z-50 h-16">
       <div className="flex justify-center">
         <div className="flex space-x-4 sm:space-x-6 md:space-x-8 p-4 overflow-x-auto max-w-full scrollbar-hide">
           {tabs.map((tab) => (
