@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from "react";
 
 interface VoiceNoteProps {
   audioUrl: string; // URL to the voice note
-  recordedTime: string; // Time in seconds of the recording
+  recordedTime: number; // Time in seconds of the recording
 }
 
 const VoiceNotePlayer: React.FC<VoiceNoteProps> = ({
@@ -38,11 +38,10 @@ const VoiceNotePlayer: React.FC<VoiceNoteProps> = ({
   }, [recordedTime]); // Watch for recordedTime changes
 
   // Format time (seconds) to mm:ss
-  const formatTime = (time: string) => {
-    const parsedTime = parseFloat(time);
-    console.log(`parsedTime in the player : ${parsedTime}`);
-    const minutes = Math.floor(parsedTime / 60);
-    const seconds = Math.round(parsedTime % 60); // Rounding to avoid very small values being lost
+  const formatTime = (time: number) => {
+    console.log(`parsedTime in the player : ${time}`);
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.round(time % 60); // Rounding to avoid very small values being lost
     return `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`;
   };
 

@@ -3,14 +3,14 @@ import React, { useEffect, useRef } from "react";
 import VoiceNotePlayer from "./voiceNotePlayer";
 
 interface Message {
-  recordedTime?: string;
-  message?: string;
   senderId: number;
   consultationId: number;
   isSent: boolean;
   read: boolean;
+  message?: string;
   attachmentUrl?: string;
   attachmentType?: string;
+  recordedTime?: number;
 }
 
 interface ChatMainContentsProps {
@@ -61,7 +61,7 @@ const ChatMainContents: React.FC<ChatMainContentsProps> = ({
                   recordedTime={
                     message.recordedTime != null
                       ? message.recordedTime // Proper conversion of recordedTime
-                      : "12" // No fallback to 3, use null if unavailable
+                      : 12 // No fallback to 3, use null if unavailable
                   }
                 />
               ) : message.attachmentType === "images" ? (
