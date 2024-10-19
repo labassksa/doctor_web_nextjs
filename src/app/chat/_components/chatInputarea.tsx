@@ -5,11 +5,13 @@ import axios from "axios";
 interface StickyMessageInputProps {
   onSendMessage: (messageText: string, fileMessage?: any) => void; // Handle both text and file messages
   consultationId: number; // Ensure consultationId is passed down
+  isConsultationOpen: boolean;
 }
 
 const StickyMessageInput: React.FC<StickyMessageInputProps> = ({
   onSendMessage,
   consultationId,
+  isConsultationOpen,
 }) => {
   const [inputFocused, setInputFocused] = useState(false);
   const [message, setMessage] = useState("");
@@ -127,12 +129,17 @@ const StickyMessageInput: React.FC<StickyMessageInputProps> = ({
           audio.onloadedmetadata = async () => {
             const recordedTime = audio.duration; // Duration in seconds
             setIsUploading(true); // Show spinner while uploading
+            const parsedRecordedTime = Number(recordedTime);
+            if (isNaN(parsedRecordedTime)) {
+              console.error("Invalid recordedTime on the frontend");
+              return; // or handle the error accordingly
+            }
 
             const formData = new FormData();
             formData.append("file", audioBlob, "voice_note.mp4");
             formData.append("senderId", String(Number(userId)));
             formData.append("consultationId", String(consultationId));
-            formData.append("recordedTime", String(Number(recordedTime))); // Add recorded time
+            formData.append("recordedTime", String(parsedRecordedTime)); // Add valid recorded time
 
             console.log(`recoreded TIme in STOPRecording: ${recordedTime}`);
             try {
@@ -166,7 +173,6 @@ const StickyMessageInput: React.FC<StickyMessageInputProps> = ({
       };
     }
   };
-
   // Handle sending text messages
   const handleSendMessage = () => {
     if (message.trim()) {
@@ -184,16 +190,22 @@ const StickyMessageInput: React.FC<StickyMessageInputProps> = ({
   return (
     <div className="sticky bottom-0 bg-white p-4 flex items-center border-t w-full max-w-full h-auto min-h-[64px]">
       {/* File Upload Button */}
-      <button className="p-2">
+      <button
+        className="p-2"
+        disabled={!isConsultationOpen} // Disable if consultation is not open
+      >
         <input
           type="file"
           onChange={handleFileChange}
           className="hidden"
           id="file-input"
+          disabled={!isConsultationOpen} // Disable file input if consultation is not open
         />
         <label htmlFor="file-input">
           <svg
-            className="w-6 h-6 text-gray-500"
+            className={`w-6 h-6 ${
+              !isConsultationOpen ? "text-gray-300" : "text-gray-500"
+            }`} // Change color if disabled
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -210,14 +222,21 @@ const StickyMessageInput: React.FC<StickyMessageInputProps> = ({
 
       {/* Mic Button for Voice Recording */}
       <button
-        className="p-2 mx-2"
-        onMouseDown={startRecording} // Start recording on mouse down
-        onMouseUp={stopRecording} // Stop recording on mouse up
+        className={`p-2 mx-2 ${
+          !isConsultationOpen ? "text-gray-300" : "text-gray-500"
+        }`}
+        disabled={!isConsultationOpen} // Disable voice recording if consultation is not open
+        onMouseDown={isConsultationOpen ? startRecording : undefined}
+        onMouseUp={isConsultationOpen ? stopRecording : undefined}
       >
         <svg
           className={`w-6 h-6 ${
-            isRecording ? "text-green-500" : "text-gray-500"
-          }`} // Change color while recording
+            !isConsultationOpen
+              ? "text-gray-300"
+              : isRecording
+              ? "text-green-500"
+              : "text-gray-500"
+          }`}
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
           fill="none"
@@ -235,21 +254,27 @@ const StickyMessageInput: React.FC<StickyMessageInputProps> = ({
         ref={inputRef}
         type="text"
         dir="rtl"
-        placeholder="اكتب رسالة..."
+        placeholder={
+          isConsultationOpen ? "اكتب رسالة..." : "The consultation is closed."
+        }
         value={message}
         onChange={(e) => setMessage(e.target.value)}
-        className="flex-grow p-2 border text-black rounded-full outline-none w-full
-             text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl
-             px-4 py-2 sm:px-6 sm:py-3 md:px-8 md:py-4 lg:px-10 lg:py-4"
+        className={`flex-grow p-2  border text-black rounded-full outline-none w-full ${
+          isConsultationOpen ? "" : "bg-gray-200 text-gray-500"
+        }`}
         style={{ fontSize: "16px" }} // Prevent zoom on focus
-        onFocus={handleFocus}
+        onFocus={isConsultationOpen ? handleFocus : undefined}
         onBlur={() => setInputFocused(false)}
+        disabled={!isConsultationOpen} // Disable input if consultation is not open
       />
 
       {/* Send Button */}
       <button
-        className={`p-2 ${inputFocused ? "text-green-500" : "text-gray-500"}`}
-        onClick={handleSendMessage} // Send message when clicked
+        className={`p-2 ${
+          !isConsultationOpen ? "text-gray-300" : "text-green-500"
+        }`}
+        onClick={isConsultationOpen ? handleSendMessage : undefined}
+        disabled={!isConsultationOpen} // Disable send button if consultation is not open
       >
         <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
           <path
