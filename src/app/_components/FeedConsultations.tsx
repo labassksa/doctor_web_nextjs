@@ -68,6 +68,12 @@ const FeedConsultations: React.FC<FeedConsultationsProps> = ({
                         : "N/A"}
                     </span>
                   </div>
+                  <div className="text-xs text-black">
+                    [Phone Number]:{" "}
+                    <span className="text-black">
+                      {consultation.patient.user.phoneNumber}
+                    </span>
+                  </div>
                   <div
                     className={`inline-block mt-1 px-2 py-1 text-xs rounded-full text-black ${
                       consultation.patient.user.gender === "Male"
