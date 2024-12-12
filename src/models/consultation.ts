@@ -2,7 +2,7 @@ import { DoctorProfile } from "./doctorProfile";
 import { MarketerProfile } from "./marketerProfile";
 import { PatientProfile } from "./patientProfile";
 import { Payment } from "./payment";
-import { PromotionalCode } from "./promotionalCode";
+import { PromotionalCode } from "./promotionalcode";
 
 export enum ConsultationType {
   Quick = "quick",
