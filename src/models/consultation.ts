@@ -1,5 +1,8 @@
 import { DoctorProfile } from "./doctorProfile";
+import { MarketerProfile } from "./marketerProfile";
 import { PatientProfile } from "./patientProfile";
+import { Payment } from "./payment";
+import { PromotionalCode } from "./promotionalCode";
 
 export enum ConsultationType {
   Quick = "quick",
@@ -26,6 +29,9 @@ export class Consultation {
     public type: ConsultationType,
     public patient: PatientProfile | null, // Allowing null here
     public doctor?: DoctorProfile | null, // Allowing null here
+    public payment?: Payment, // Added payment
+    public promotionalCode?: PromotionalCode, // Added promotional code
+    public marketerProfile?: MarketerProfile, // Added marketer profile
     public hasPrescription: boolean = false,
     public hasSOAP: boolean = false,
     public hasSickLeave: boolean = false
