@@ -1,6 +1,6 @@
 import { User } from "./user";
 import { Consultation } from "./consultation";
-import { PromotionalCode } from "./promotionalCode";
+import { PromotionalCode } from "./promotionalcode";
 
 export class Payment {
   constructor(
