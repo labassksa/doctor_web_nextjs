@@ -2,7 +2,7 @@ import { DoctorProfile } from "./doctorProfile";
 import { MarketerProfile } from "./marketerProfile";
 import { PatientProfile } from "./patientProfile";
 import { Payment } from "./payment";
-import { PromotionalCode } from "./promotionalcode";
+import { PromotionalCode } from "./promotionalCode"; // Make sure this matches the file name!
 
 export enum ConsultationType {
   Quick = "quick",
@@ -27,11 +27,11 @@ export class Consultation {
     public closedAt: Date,
     public status: ConsultationStatus,
     public type: ConsultationType,
-    public patient: PatientProfile | null, // Allowing null here
-    public doctor?: DoctorProfile | null, // Allowing null here
-    public payment?: Payment, // Added payment
-    public promotionalCode?: PromotionalCode, // Added promotional code
-    public marketerProfile?: MarketerProfile, // Added marketer profile
+    public patient: PatientProfile | null,
+    public doctor?: DoctorProfile | null,
+    public payment?: Payment,
+    public promotionalCode?: PromotionalCode,
+    public marketerProfile?: MarketerProfile,
     public hasPrescription: boolean = false,
     public hasSOAP: boolean = false,
     public hasSickLeave: boolean = false
