@@ -1,5 +1,5 @@
 // models/User.ts
-class User {
+export class User {
   id: number;
   firstName: string;
   lastName: string;
@@ -19,7 +19,7 @@ class User {
     gender = "",
     phoneNumber = "",
     email = null,
-    role = ""
+    role = "",
   }: {
     id?: number;
     firstName?: string;
@@ -52,7 +52,7 @@ class User {
     if (!this.gender) return "Gender selection is required.";
     if (!this.phoneNumber) return "Phone number is required.";
     if (!this.role) return "Role is required.";
-    return null;  // No validation errors
+    return null; // No validation errors
   }
 }
 
