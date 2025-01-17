@@ -34,6 +34,8 @@ export class Consultation {
     public marketerProfile?: MarketerProfile,
     public hasPrescription: boolean = false,
     public hasSOAP: boolean = false,
+    public labTestPDFUrls?: string[], // To store multiple URLs for lab test PDFs
+    public labConsultationType?: string, // To store multiple URLs for lab test PDFs
     public hasSickLeave: boolean = false
   ) {}
 }

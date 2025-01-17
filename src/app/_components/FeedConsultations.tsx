@@ -2,11 +2,16 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation"; // For navigation within Next.js
 import { Consultation, ConsultationStatus } from "../../models/consultation"; // Adjust the path if needed
+// import { OrganizationTypes } from "../../types/organizationTypes";
 
 interface FeedConsultationsProps {
   consultations: Consultation[];
   onAccept: (consultationId: number) => void;
   acceptLoading: boolean;
+}
+enum OrganizationTypes {
+  Pharmacy = "pharmacy",
+  Laboratory = "laboratory",
 }
 
 const FeedConsultations: React.FC<FeedConsultationsProps> = ({
@@ -168,9 +173,48 @@ const FeedConsultations: React.FC<FeedConsultationsProps> = ({
               Organization Name:{" "}
               <span className="text-black">{marketerOrg?.name || "N/A"}</span>
             </div>
-            <div className="text-xs text-gray-500">
-              Organization Type:{" "}
-              <span className="text-black">{marketerOrg?.type || "N/A"}</span>
+            <div>
+              {/* Organization Type Display */}
+              <div className="text-xs text-gray-500">
+                Organization Type:{" "}
+                <span className="text-black">{marketerOrg?.type || "N/A"}</span>
+              </div>
+
+              {/* Conditionally show lab tests and test type if marketerOrg is Laboratory */}
+              {marketerOrg?.type === OrganizationTypes.Laboratory && (
+                <>
+                  {/* Lab Test URLs Display */}
+                  <div className="text-xs text-gray-500">
+                    Lab Tests:
+                    <ul className="text-black">
+                      {consultation?.labTestPDFUrls?.length ? (
+                        consultation.labTestPDFUrls.map((url, index) => (
+                          <li key={index}>
+                            <a
+                              href={url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-500 underline hover:text-blue-700"
+                            >
+                              Lab Test {index + 1}
+                            </a>
+                          </li>
+                        ))
+                      ) : (
+                        <li>No lab tests available</li>
+                      )}
+                    </ul>
+                  </div>
+
+                  {/* Lab Test Type Display */}
+                  <div className="text-xs text-gray-500">
+                    Test Type:{" "}
+                    <span className="text-black">
+                      {consultation?.labConsultationType || "N/A"}
+                    </span>
+                  </div>
+                </>
+              )}
             </div>
             <div className="text-xs text-gray-500">
               <div className="text-xs text-gray-500">

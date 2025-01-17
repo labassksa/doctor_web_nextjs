@@ -20,6 +20,7 @@ const FeedPage = () => {
   // Fetch consultations on page load
   useEffect(() => {
     const token = localStorage.getItem("labass_doctor_token");
+    console.log(`Labass doctor Token: ${token} `);
     if (!token) {
       router.push("/login");
     }

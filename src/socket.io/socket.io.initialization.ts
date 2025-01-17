@@ -10,6 +10,8 @@ const useSocket = (url: string, token: string) => {
   useEffect(() => {
     const initializeSocket = () => {
       socketRef.current = io(url, {
+        path: "/socket.io/", // Match the backend's WebSocket path
+        transports: ["websocket"], // Explicitly specify WebSocket transport
         auth: {
           token, // Pass the JWT token during the WebSocket handshake
         },
