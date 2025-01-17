@@ -273,38 +273,37 @@ const ChatPage: React.FC = () => {
 
       <div className="flex flex-col min-h-screen bg-gray-100">
         <div className="fixed bg-white w-full border-b border-gray-200 mt-16">
-          <div className="p-2">
+          <div className="flex justify-between p-2">
             <button
               onClick={handleBackToFeed}
-              className="text-blue-500 text-xs hover:underline"
+              className="text-blue-500 text-md hover:underline"
             >
               Back to Feed
             </button>
+            {/* Conditionally show the Accept or End Consultation Button */}
+            {status === ConsultationStatus.Paid && (
+              <div className="p-2">
+                <button
+                  onClick={handleAcceptConsultation}
+                  disabled={acceptLoading}
+                  className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 bg-green-600 text-white text-xs py-2 sm:py-3 px-2 sm:px-4 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                >
+                  {acceptLoading ? "Accepting..." : "Accept Consultation"}
+                </button>
+              </div>
+            )}
+
+            {status === ConsultationStatus.Open && (
+              <div className="p-2">
+                <button
+                  onClick={handleEndConsultation}
+                  className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 bg-red-600 text-white text-xs py-2 sm:py-3 px-2 sm:px-4 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                >
+                  End Consultation
+                </button>
+              </div>
+            )}
           </div>
-
-          {/* Conditionally show the Accept or End Consultation Button */}
-          {status === ConsultationStatus.Paid && (
-            <div className="p-2">
-              <button
-                onClick={handleAcceptConsultation}
-                disabled={acceptLoading}
-                className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 bg-green-600 text-white text-xs py-2 sm:py-3 px-2 sm:px-4 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-              >
-                {acceptLoading ? "Accepting..." : "Accept Consultation"}
-              </button>
-            </div>
-          )}
-
-          {status === ConsultationStatus.Open && (
-            <div className="p-2">
-              <button
-                onClick={handleEndConsultation}
-                className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 bg-red-600 text-white text-xs py-2 sm:py-3 px-2 sm:px-4 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-              >
-                End Consultation
-              </button>
-            </div>
-          )}
 
           {/* Status Display */}
           <h2 className="text-xs flex flex-row p-2 font-semibold text-gray-900">
