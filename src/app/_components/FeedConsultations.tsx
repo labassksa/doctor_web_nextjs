@@ -143,6 +143,17 @@ const FeedConsultations: React.FC<FeedConsultationsProps> = ({
                         : "N/A"}
                     </span>
                   </div>
+                  <div className="text-xs text-gray-500">
+                    Created at:{" "}
+                    <span className="text-black">
+                      {consultation.createdAt
+                        ? new Date(consultation.createdAt).toLocaleString()
+                        : "N/A"}
+                    </span>
+                  </div>
+                  <div className="text-xs text-gray-500 italic">
+                    Note: For subscribed organizations, the created at timestamp indicates when the consultation link was sent to the patient.
+                  </div>
                   {consultation.patientJoinedAT && (
                     <div className="text-xs text-gray-500">
                       Patient Joined at:{" "}
@@ -178,6 +189,10 @@ const FeedConsultations: React.FC<FeedConsultationsProps> = ({
               <div className="text-xs text-gray-500">
                 Organization Type:{" "}
                 <span className="text-black">{marketerOrg?.type || "N/A"}</span>
+              </div>
+              <div className="text-xs text-gray-500">
+                Deal Type:{" "}
+                <span className="text-black">{marketerOrg?.dealType || "N/A"}</span>
               </div>
 
               {/* Conditionally show lab tests and test type if marketerOrg is Laboratory */}

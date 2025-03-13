@@ -5,6 +5,7 @@ export class MarketerOrganization {
     public name: string,
     public city: string,
     public type: string,
-    public numberOfBranches: number
+    public numberOfBranches: number,
+    public dealType?: string
   ) {}
 }
