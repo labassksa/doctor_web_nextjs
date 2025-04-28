@@ -46,13 +46,13 @@ const Sidebar: React.FC = () => {
         <div className="p-4 h-full flex flex-col justify-between">
           <div>
             <div className="flex flex-col items-center mt-10">
-              <Image
+              {/* <Image
                 src="/path-to-doctor-image.jpg"
                 alt="Dr. Mohammed"
                 width={96}
                 height={96}
                 className="rounded-full"
-              />
+              /> */}
               <h2 className="mt-4 text-lg font-semibold">Dr: Mohammed</h2>
               <Link href="/profile">
                 <button className="mt-2 px-4 py-2 text-sm text-white bg-green-500 rounded">

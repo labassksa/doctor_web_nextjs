@@ -6,8 +6,9 @@ import { DrugHit } from "../../../utils/types/drugHit";
 import { DiagnosisHit } from "../../../utils/types/diagnosis";
 import { searchClient } from "../../../lib/algoliaClient";
 import "@algolia/autocomplete-theme-classic";
+import { LabTestHit } from "@/utils/types/labTestHit";
 
-type SearchItem = DrugHit | DiagnosisHit;
+type SearchItem = DrugHit | DiagnosisHit | LabTestHit;
 
 interface SearchBarProps {
   placeholder: string;
@@ -37,6 +38,8 @@ const SearchBar: React.FC<SearchBarProps> = ({
             ? `${selectedItem["Scientific Name"]} - ${selectedItem["Trade Name"]}  STRENGTHUNIT: ${selectedItem.StrengthUnit} ROUTE: ${selectedItem.AdministrationRoute}`
             : selectedItem && isDiagnosisHit(selectedItem)
             ? `${selectedItem.ascii_desc}`
+            : selectedItem && isLabTestHit(selectedItem)
+            ? `${selectedItem.test_name} - ${selectedItem.code}`
             : "",
       },
       getSources({ query }) {
@@ -54,6 +57,8 @@ const SearchBar: React.FC<SearchBarProps> = ({
                 return ` ${item["Scientific Name"]} - ${item["Trade Name"]}`;
               } else if (isDiagnosisHit(item)) {
                 return item.ascii_desc;
+              } else if (isLabTestHit(item)) {
+                return `${item.test_name} - ${item.code}`;
               }
               return "nothing";
             },
@@ -63,6 +68,8 @@ const SearchBar: React.FC<SearchBarProps> = ({
                   return `${item["Scientific Name"]} - ${item["Trade Name"]}`;
                 } else if (isDiagnosisHit(item)) {
                   return `${item.ascii_desc} (${item.ascii_short_desc})`;
+                } else if (isLabTestHit(item)) {
+                  return `${item.test_name} - ${item.code}`;
                 }
                 return "";
               },
@@ -73,6 +80,9 @@ const SearchBar: React.FC<SearchBarProps> = ({
                 setQuery(selectedValue);
               } else if (isDiagnosisHit(item)) {
                 const selectedValue = item.ascii_desc;
+                setQuery(selectedValue);
+              }  else if (isLabTestHit(item)) {
+                const selectedValue = `${item.test_name} - ${item.code}`;
                 setQuery(selectedValue);
               }
               onSelect(item); // This should correctly pass the item to the parent
@@ -100,5 +110,9 @@ const isDrugHit = (item: SearchItem): item is DrugHit => {
 const isDiagnosisHit = (item: SearchItem): item is DiagnosisHit => {
   return (item as DiagnosisHit).ascii_desc !== undefined;
 };
+
+const isLabTestHit = (item: SearchItem): item is LabTestHit => {
+  return (item as LabTestHit).test_name !== undefined;
+}
 
 export default SearchBar;

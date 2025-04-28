@@ -24,7 +24,7 @@ const MyConsultations: React.FC<MyConsultationsProps> = ({
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen space-y-4 p-4">
+    <div className="bg-gray-100 space-y-4 p-4">
       {consultations.map((consultation) => (
         <div
           key={consultation.id}

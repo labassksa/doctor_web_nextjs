@@ -4,7 +4,8 @@ export const issueOrUpdatePrescription = async (
   consultationId: number,
   drugs: any[],
   diagnoses: string[],
-  allergies: string[]
+  allergies: string[],
+  labTestsIds: number[],
 ) => {
   try {
     const token = localStorage.getItem("labass_doctor_token"); // Replace with your actual token retrieval method
@@ -19,6 +20,7 @@ export const issueOrUpdatePrescription = async (
         drugs,
         diagnoses,
         allergies,
+        labTestsIds
       },
       {
         headers: {

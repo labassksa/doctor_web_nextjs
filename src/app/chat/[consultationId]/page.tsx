@@ -314,10 +314,8 @@ const ChatPage: React.FC = () => {
             <div className="flex flex-row">
               <p className="px-2 text-sm text-black">Patient Name:</p>
               <p className="mr-2 text-sm text-gray-500">
-                {consultationInfo.patient?.user?.lastName || "N/A"}
-                <p className="text-sm text-gray-500 mr-2">
-                  {consultationInfo.patient?.user?.firstName || "N/A"}
-                </p>
+                {consultationInfo.patient?.user?.firstName + " " +
+                 consultationInfo.patient?.user?.lastName || "N/A"}
               </p>
               <p className="text-sm ml-2 text-black">Patient Age:</p>
               <p className="text-sm text-gray-500">

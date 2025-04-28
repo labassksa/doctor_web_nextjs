@@ -1,5 +1,6 @@
 "use client";
 
+import { LabTestHit } from "@/utils/types/labTestHit";
 import React from "react";
 
 interface ConfirmationModalProps {
@@ -9,6 +10,7 @@ interface ConfirmationModalProps {
   selectedDrugs: any[];
   selectedAllergies: any[];
   selectedDiagnosis: any[];
+  selectedLabTests: LabTestHit[]
 }
 
 const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
@@ -18,6 +20,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   selectedDrugs,
   selectedAllergies,
   selectedDiagnosis,
+  selectedLabTests,
 }) => {
   if (!isOpen) return null;
 
@@ -68,6 +71,19 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
             </ol>
           ) : (
             <p className="mb-4 text-xs">No diagnoses selected.</p>
+          )}
+
+          <h3 className="text-sm font-semibold mb-2 m-2">Selected Lab Tests</h3>
+          {selectedLabTests.length > 0 ? (
+            <ol className="list-decimal list-inside m-2">
+              {selectedLabTests.map((labTest, index) => (
+                <li key={index} className="text-xs mb-2">
+                  {labTest.test_name} - {labTest.code}
+                </li>
+              ))}
+            </ol>
+          ) : (
+            <p className="mb-4 text-xs">No lab tests selected.</p>
           )}
         </div>
 
