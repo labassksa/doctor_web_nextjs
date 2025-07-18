@@ -36,6 +36,7 @@ const ChatPage: React.FC = () => {
   const [confirmationMessage, setConfirmationMessage] = useState<string | null>(
     null
   ); // For acceptance confirmation
+  const [showPatientHistory, setShowPatientHistory] = useState(false);
 
   const router = useRouter();
   const params = useParams();
@@ -311,18 +312,31 @@ const ChatPage: React.FC = () => {
           </h2>
 
           {consultationInfo && (
-            <div className="flex flex-row">
-              <p className="px-2 text-sm text-black">Patient Name:</p>
-              <p className="mr-2 text-sm text-gray-500">
-                {consultationInfo.patient?.user?.firstName + " " +
-                 consultationInfo.patient?.user?.lastName || "N/A"}
-              </p>
-              <p className="text-sm ml-2 text-black">Patient Age:</p>
-              <p className="text-sm text-gray-500">
-                {consultationInfo.patient?.user?.dateOfBirth
-                  ? calculateAge(consultationInfo.patient?.user?.dateOfBirth)
-                  : "N/A"}
-              </p>
+            <div className="flex flex-col space-y-2">
+              <div className="flex flex-row">
+                <p className="px-2 text-sm text-black">Patient Name:</p>
+                <p className="mr-2 text-sm text-gray-500">
+                  {consultationInfo.patient?.user?.firstName + " " +
+                   consultationInfo.patient?.user?.lastName || "N/A"}
+                </p>
+                <p className="text-sm ml-2 text-black">Patient Age:</p>
+                <p className="text-sm text-gray-500">
+                  {consultationInfo.patient?.user?.dateOfBirth
+                    ? calculateAge(consultationInfo.patient?.user?.dateOfBirth)
+                    : "N/A"}
+                </p>
+              </div>
+              
+              {consultationInfo.previousConsultations && consultationInfo.previousConsultations.length > 0 && (
+                <div className="px-2">
+                  <button
+                    onClick={() => setShowPatientHistory(true)}
+                    className="bg-blue-500 hover:bg-blue-600 text-white text-xs py-1 px-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  >
+                    Patient History ({consultationInfo.previousConsultations.length})
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -370,6 +384,152 @@ const ChatPage: React.FC = () => {
                 ) : (
                   "End Consultation"
                 )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Patient History Modal */}
+      {showPatientHistory && consultationInfo?.previousConsultations && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-4xl max-h-[90vh] overflow-hidden">
+            {/* Modal Header */}
+            <div className="flex justify-between items-center p-4 border-b border-gray-200">
+              <h2 className="text-lg font-semibold text-gray-900">
+                Patient History - {consultationInfo.patient?.user?.firstName} {consultationInfo.patient?.user?.lastName}
+              </h2>
+              <button
+                onClick={() => setShowPatientHistory(false)}
+                className="text-gray-500 hover:text-gray-700 focus:outline-none"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            {/* Modal Body */}
+            <div className="p-4 overflow-y-auto max-h-[70vh]">
+              <div className="space-y-4">
+                {consultationInfo.previousConsultations.map((consultation: any, index: number) => (
+                  <div key={consultation.id} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                    <div className="flex justify-between items-start mb-3">
+                      <div className="flex items-center space-x-2">
+                        <h3 className="font-medium text-gray-900">
+                          Consultation #{consultation.id}
+                        </h3>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          consultation.status === 'Closed' 
+                            ? 'bg-red-100 text-red-700' 
+                            : consultation.status === 'Open'
+                            ? 'bg-green-100 text-green-700'
+                            : 'bg-blue-100 text-blue-700'
+                        }`}>
+                          {consultation.status}
+                        </span>
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {new Date(consultation.createdAt).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <p className="text-gray-600 mb-1">Doctor:</p>
+                        <p className="font-medium">{consultation.doctor?.user?.firstName} {consultation.doctor?.user?.lastName}</p>
+                        <p className="text-gray-500">{consultation.doctor?.specialty}</p>
+                      </div>
+                      
+                      <div>
+                        <p className="text-gray-600 mb-1">Consultation Type:</p>
+                        <p className="font-medium capitalize">{consultation.type}</p>
+                      </div>
+                      
+                      {consultation.prescription && (
+                        <div className="md:col-span-2">
+                          <p className="text-gray-600 mb-1">Diagnosis:</p>
+                          <div className="bg-white p-2 rounded border">
+                            {consultation.prescription.diagnoses && consultation.prescription.diagnoses.length > 0 ? (
+                              <ul className="list-disc list-inside text-sm">
+                                {consultation.prescription.diagnoses.map((diagnosis: string, idx: number) => (
+                                  <li key={idx}>{diagnosis}</li>
+                                ))}
+                              </ul>
+                            ) : (
+                              <p className="text-gray-500">No diagnosis recorded</p>
+                            )}
+                          </div>
+                          
+                          {consultation.prescription.pdfURL && (
+                            <div className="mt-2">
+                              <a
+                                href={consultation.prescription.pdfURL}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-500 hover:text-blue-700 text-sm underline"
+                              >
+                                View Prescription PDF
+                              </a>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      
+                      {consultation.labTestPDFUrls && consultation.labTestPDFUrls.length > 0 && (
+                        <div className="md:col-span-2">
+                          <p className="text-gray-600 mb-1">Lab Tests:</p>
+                          <div className="bg-white p-2 rounded border">
+                            <div className="flex flex-wrap gap-2">
+                              {consultation.labTestPDFUrls.map((labTestUrl: string, idx: number) => (
+                                <a
+                                  key={idx}
+                                  href={labTestUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-blue-500 hover:text-blue-700 text-sm underline"
+                                >
+                                  Lab Test {idx + 1} PDF
+                                </a>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      
+                      <div>
+                        <p className="text-gray-600 mb-1">Payment Status:</p>
+                        <p className="font-medium">{consultation.payment?.paymentStatus || 'N/A'}</p>
+                        <p className="text-gray-500">Amount: {consultation.payment?.invoiceValue || 'N/A'} SAR</p>
+                      </div>
+                      
+                      <div>
+                        <p className="text-gray-600 mb-1">Duration:</p>
+                        <p className="font-medium">
+                          {consultation.doctorJoinedAT && consultation.closedAt
+                            ? `${Math.round((new Date(consultation.closedAt).getTime() - new Date(consultation.doctorJoinedAT).getTime()) / (1000 * 60))} minutes`
+                            : 'N/A'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            {/* Modal Footer */}
+            <div className="p-4 border-t border-gray-200">
+              <button
+                onClick={() => setShowPatientHistory(false)}
+                className="w-full bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+              >
+                Close
               </button>
             </div>
           </div>
