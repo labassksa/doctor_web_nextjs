@@ -328,10 +328,10 @@ const ChatPage: React.FC = () => {
               </div>
               
               {consultationInfo.previousConsultations && consultationInfo.previousConsultations.length > 0 && (
-                <div className="px-2">
+                <div className="px-2 pb-2">
                   <button
                     onClick={() => setShowPatientHistory(true)}
-                    className="bg-blue-500 hover:bg-blue-600 text-white text-xs py-1 px-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                    className="bg-blue-500 hover:bg-blue-600 text-white text-xs py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 relative z-10"
                   >
                     Patient History ({consultationInfo.previousConsultations.length})
                   </button>
