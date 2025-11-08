@@ -44,22 +44,32 @@ const VideoRoom: React.FC<VideoRoomProps> = ({
           display: flex !important;
           visibility: visible !important;
           opacity: 1 !important;
-          position: absolute !important;
+          position: fixed !important;
           bottom: 0 !important;
           left: 0 !important;
           right: 0 !important;
           transform: none !important;
           transition: none !important;
+          z-index: 9999 !important;
+          background: rgba(0, 0, 0, 0.8) !important;
+          padding: 12px !important;
+          pointer-events: auto !important;
         }
         .lk-video-conference {
           display: flex !important;
           flex-direction: column !important;
           position: relative !important;
+          height: 100vh !important;
         }
         .lk-video-conference .lk-control-bar-wrapper {
           display: flex !important;
           visibility: visible !important;
           opacity: 1 !important;
+          position: fixed !important;
+          bottom: 0 !important;
+          left: 0 !important;
+          right: 0 !important;
+          z-index: 9999 !important;
         }
         .lk-video-conference .lk-control-bar-container {
           display: flex !important;
@@ -70,6 +80,36 @@ const VideoRoom: React.FC<VideoRoomProps> = ({
         [class*="control"] {
           visibility: visible !important;
           opacity: 1 !important;
+          display: flex !important;
+        }
+        /* Mobile-specific fixes */
+        @media (max-width: 768px) {
+          .lk-control-bar {
+            padding: 16px 8px !important;
+            gap: 8px !important;
+            justify-content: center !important;
+          }
+          .lk-control-bar button {
+            min-width: 48px !important;
+            min-height: 48px !important;
+            touch-action: manipulation !important;
+            -webkit-tap-highlight-color: transparent !important;
+          }
+          .lk-video-conference {
+            touch-action: none !important;
+          }
+          /* Ensure buttons are touchable */
+          .lk-button {
+            pointer-events: auto !important;
+            cursor: pointer !important;
+          }
+        }
+        /* Prevent control bar from hiding on mobile */
+        .lk-video-conference:hover .lk-control-bar,
+        .lk-video-conference .lk-control-bar {
+          opacity: 1 !important;
+          visibility: visible !important;
+          display: flex !important;
         }
       `}</style>
       <LiveKitRoom
