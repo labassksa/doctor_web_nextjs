@@ -24,6 +24,7 @@
     "algoliasearch": "4.24.0",
     "autoprefixer": "10.4.19",
     "axios": "^1.7.4",
+    "firebase": "^10.7.1",
     "instantsearch.css": "^8.4.0",
     "livekit-client": "^2.15.14",
     "next": "14.2.4",
