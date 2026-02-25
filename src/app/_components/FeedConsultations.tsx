@@ -81,9 +81,12 @@ const FeedConsultations: React.FC<FeedConsultationsProps> = ({
                     </div>
                     <div className="text-xs text-gray-500">
                       Phone Number:{" "}
-                      <span className="text-black">
+                      <a
+                        href={`tel:${consultation.patient.user.phoneNumber}`}
+                        className="text-black underline"
+                      >
                         {consultation.patient.user.phoneNumber}
-                      </span>
+                      </a>
                     </div>
                     <div
                       className={`inline-block mt-1 px-2 py-1 text-xs rounded-full text-black ${
@@ -258,9 +261,16 @@ const FeedConsultations: React.FC<FeedConsultationsProps> = ({
             </div>
             <div className="text-xs text-gray-500">
               Marketer Phone:{" "}
-              <span className="text-black">
-                {marketerUser?.phoneNumber || "N/A"}
-              </span>
+              {marketerUser?.phoneNumber ? (
+                <a
+                  href={`tel:${marketerUser.phoneNumber}`}
+                  className="text-black underline"
+                >
+                  {marketerUser.phoneNumber}
+                </a>
+              ) : (
+                <span className="text-black">N/A</span>
+              )}
             </div>
 
             {/* Action Buttons Section */}
