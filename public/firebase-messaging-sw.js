@@ -8,12 +8,12 @@ importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-comp
 // Firebase configuration
 // These values will be replaced with actual environment variables
 const firebaseConfig = {
-  apiKey: "FIREBASE_API_KEY_PLACEHOLDER",
-  authDomain: "FIREBASE_AUTH_DOMAIN_PLACEHOLDER",
-  projectId: "FIREBASE_PROJECT_ID_PLACEHOLDER",
-  storageBucket: "FIREBASE_STORAGE_BUCKET_PLACEHOLDER",
-  messagingSenderId: "FIREBASE_MESSAGING_SENDER_ID_PLACEHOLDER",
-  appId: "FIREBASE_APP_ID_PLACEHOLDER"
+  apiKey: "AIzaSyCH7IJVazYo2MCx07oQSfi-247bS90m4j4",
+  authDomain: "labass-94db4.firebaseapp.com",
+  projectId: "labass-94db4",
+  storageBucket: "labass-94db4.firebasestorage.app",
+  messagingSenderId: "644827433634",
+  appId: "1:644827433634:web:4907338b39988f0fb765fb"
 };
 
 // Initialize Firebase
@@ -31,7 +31,7 @@ messaging.onBackgroundMessage((payload) => {
     body: payload.notification?.body || 'You have a new notification',
     icon: '/icons/icon-192x192.png',
     badge: '/icons/icon-72x72.png',
-    tag: payload.data?.type || 'default',
+    tag: `${payload.data?.type || 'default'}-${payload.data?.consultationId || ''}-${Date.now()}`,
     data: payload.data || {},
     requireInteraction: payload.data?.type === 'INCOMING_CALL',
     actions: generateNotificationActions(payload.data?.type),

@@ -39,15 +39,13 @@ export function PushNotificationProvider({ children }: PushNotificationProviderP
       return;
     }
 
-    if (permission !== 'default') {
-      console.log('[PushNotificationProvider] Permission already set:', permission);
-      // Mark as requested so we don't ask again
+    if (permission === 'denied') {
+      console.log('[PushNotificationProvider] Permission denied, skipping');
       localStorage.setItem('push_permission_requested_doctor', 'true');
       return;
     }
 
-    // Wait 3 seconds after login before requesting permission
-    // This gives the user time to settle in before being prompted
+    // For both 'default' (will prompt user) and 'granted' (will silently register token)
     const timeoutId = setTimeout(() => {
       console.log('[PushNotificationProvider] Requesting push notification permission...');
       requestPermission()

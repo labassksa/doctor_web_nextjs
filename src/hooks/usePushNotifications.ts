@@ -254,7 +254,7 @@ export function usePushNotifications(): PushNotificationHookReturn {
           body: payload.notification.body || '',
           icon: '/icons/icon-192x192.png',
           badge: '/icons/icon-72x72.png',
-          tag: payload.data?.type || 'default',
+          tag: `${payload.data?.type || 'default'}-${payload.data?.consultationId || ''}-${Date.now()}`,
           data: payload.data,
           requireInteraction: payload.data?.type === 'INCOMING_CALL',
         };
