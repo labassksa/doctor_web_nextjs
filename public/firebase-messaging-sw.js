@@ -8,12 +8,12 @@ importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-comp
 // Firebase configuration
 // These values will be replaced with actual environment variables
 const firebaseConfig = {
-  apiKey: "AIzaSyCH7IJVazYo2MCx07oQSfi-247bS90m4j4",
-  authDomain: "labass-94db4.firebaseapp.com",
-  projectId: "labass-94db4",
-  storageBucket: "labass-94db4.firebasestorage.app",
-  messagingSenderId: "644827433634",
-  appId: "1:644827433634:web:4907338b39988f0fb765fb"
+  apiKey: "AIzaSyBBt2S2mRHX442Z59K_HSL-yhj6VHSHEGA",
+  authDomain: "labass-8b04d.firebaseapp.com",
+  projectId: "labass-8b04d",
+  storageBucket: "labass-8b04d.firebasestorage.app",
+  messagingSenderId: "61610489123",
+  appId: "1:61610489123:web:d79c04bd1534b72bf48896"
 };
 
 // Initialize Firebase
