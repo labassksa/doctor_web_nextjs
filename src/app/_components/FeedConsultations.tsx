@@ -44,7 +44,8 @@ const FeedConsultations: React.FC<FeedConsultationsProps> = ({
         const promoCode = consultation.payment?.promotionalCode;
         const marketerProfile = promoCode?.marketerProfile;
         const marketerUser = marketerProfile?.user;
-        const marketerOrg = marketerProfile?.organization;
+        const marketerOrg =
+          marketerProfile?.organization ?? consultation.subscription?.organization;
 
         return (
           <div

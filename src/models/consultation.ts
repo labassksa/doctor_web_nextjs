@@ -36,6 +36,7 @@ export class Consultation {
     public hasSOAP: boolean = false,
     public labTestPDFUrls?: string[], // To store multiple URLs for lab test PDFs
     public labConsultationType?: string, // To store multiple URLs for lab test PDFs
-    public hasSickLeave: boolean = false
+    public hasSickLeave: boolean = false,
+    public subscription?: any
   ) {}
 }
