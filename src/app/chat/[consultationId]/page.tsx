@@ -376,7 +376,7 @@ const ChatPage: React.FC = () => {
                     Vitamins Survey
                   </button>
                 )}
-                {consultationInfo.subscription && (
+                {consultationInfo.subscription && consultationInfo.subscription.organization === null && (
                   <button
                     onClick={() => setShowSubscription(true)}
                     className="bg-orange-500 hover:bg-orange-600 text-white text-xs py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 relative z-10"
