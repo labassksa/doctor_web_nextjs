@@ -44,8 +44,9 @@ const FeedConsultations: React.FC<FeedConsultationsProps> = ({
         const promoCode = consultation.payment?.promotionalCode;
         const marketerProfile = promoCode?.marketerProfile;
         const marketerUser = marketerProfile?.user;
-        const marketerOrg =
-          marketerProfile?.organization ?? consultation.subscription?.organization;
+        const promoOrg = marketerProfile?.organization;
+        const subscriptionOrg = consultation.subscription?.organization;
+        const isSubscription = !!consultation.subscription && !promoCode;
 
         return (
           <div
@@ -114,6 +115,10 @@ const FeedConsultations: React.FC<FeedConsultationsProps> = ({
                   Consultation ID:{" "}
                   <span className="text-black">{consultation.id}</span>
                 </div>
+                <div className="text-xs text-gray-500">
+                  Type:{" "}
+                  <span className="text-black capitalize">{consultation.type || "N/A"}</span>
+                </div>
                 <div className="text-xs m-1 text-gray-500">
                   Status:{" "}
                   <span
@@ -177,92 +182,162 @@ const FeedConsultations: React.FC<FeedConsultationsProps> = ({
               </div>
             </div>
 
-            {/* Promotional Code & Marketer Info */}
-            <h2 className="text-sm font-semibold text-gray-700  mt-2">
+            {/* Additional Information */}
+            <h2 className="text-sm font-semibold text-gray-700 mt-2">
               Additional Information
             </h2>
-            <div className="text-xs text-gray-500">
-              Organization Name:{" "}
-              <span className="text-black">{marketerOrg?.name || "N/A"}</span>
-            </div>
-            <div>
-              {/* Organization Type Display */}
-              <div className="text-xs text-gray-500">
-                Organization Type:{" "}
-                <span className="text-black">{marketerOrg?.type || "N/A"}</span>
-              </div>
-              <div className="text-xs text-gray-500">
-                Deal Type:{" "}
-                <span className="text-black">{marketerOrg?.dealType || "N/A"}</span>
-              </div>
 
-              {/* Conditionally show lab tests and test type if marketerOrg is Laboratory */}
-              {marketerOrg?.type === OrganizationTypes.Laboratory && (
-                <>
-                  {/* Lab Test URLs Display */}
-                  <div className="text-xs text-gray-500">
-                    Lab Tests:
-                    <ul className="text-black">
-                      {consultation?.labTestPDFUrls?.length ? (
-                        consultation.labTestPDFUrls.map((url, index) => (
-                          <li key={index}>
-                            <a
-                              href={url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-blue-500 underline hover:text-blue-700"
-                            >
-                              Lab Test {index + 1}
-                            </a>
-                          </li>
-                        ))
-                      ) : (
-                        <li>No lab tests available</li>
-                      )}
-                    </ul>
-                  </div>
-
-                  {/* Lab Test Type Display */}
-                  <div className="text-xs text-gray-500">
-                    Test Type:{" "}
-                    <span className="text-black">
-                      {consultation?.labConsultationType || "N/A"}
-                    </span>
-                  </div>
-                </>
-              )}
-            </div>
-            <div className="text-xs text-gray-500">
-              <div className="text-xs text-gray-500">
-                Payment Method:{" "}
-                <span className="text-black">
-                  {consultation.payment?.paymentMethod || "N/A"}
-                </span>
+            {promoCode ? (
+              <div>
+                <div className="text-xs text-gray-500">
+                  Organization Name:{" "}
+                  <span className="text-black">{promoOrg?.name || "N/A"}</span>
+                </div>
+                <div className="text-xs text-gray-500">
+                  Organization Type:{" "}
+                  <span className="text-black">{promoOrg?.type || "N/A"}</span>
+                </div>
+                <div className="text-xs text-gray-500">
+                  Deal Type:{" "}
+                  <span className="text-black">{promoOrg?.dealType || "N/A"}</span>
+                </div>
+                {promoOrg?.type === OrganizationTypes.Laboratory && (
+                  <>
+                    <div className="text-xs text-gray-500">
+                      Lab Tests:
+                      <ul className="text-black">
+                        {consultation?.labTestPDFUrls?.length ? (
+                          consultation.labTestPDFUrls.map((url, index) => (
+                            <li key={index}>
+                              <a
+                                href={url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-500 underline hover:text-blue-700"
+                              >
+                                Lab Test {index + 1}
+                              </a>
+                            </li>
+                          ))
+                        ) : (
+                          <li>No lab tests available</li>
+                        )}
+                      </ul>
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      Test Type:{" "}
+                      <span className="text-black">
+                        {consultation?.labConsultationType || "N/A"}
+                      </span>
+                    </div>
+                  </>
+                )}
+                <div className="text-xs text-gray-500">
+                  Marketer Name:{" "}
+                  <span className="text-black">
+                    {marketerUser?.firstName || "N/A"}{" "}
+                    {marketerUser?.lastName || ""}
+                  </span>
+                </div>
+                <div className="text-xs text-gray-500">
+                  Marketer Phone:{" "}
+                  <span className="text-black">
+                    {marketerUser?.phoneNumber || "N/A"}
+                  </span>
+                </div>
+                <div className="text-xs text-gray-500">
+                  Labass Offer:{" "}
+                  <span className="text-black">
+                    {promoCode.isLabassOffer ? "Yes" : "No"}
+                  </span>
+                </div>
+                <div className="text-xs text-gray-500">
+                  Payment Method:{" "}
+                  <span className="text-black">
+                    {consultation.payment?.paymentMethod || "N/A"}
+                  </span>
+                </div>
+                <div className="text-xs text-gray-500">
+                  Invoice Value:{" "}
+                  <span className="text-black">
+                    {consultation.payment?.invoiceValue || "N/A"}
+                  </span>
+                </div>
               </div>
-              <div className="text-xs text-gray-500">
-                Invoice Value:{" "}
-                <span className="text-black">
-                  {consultation.payment?.invoiceValue || "N/A"}
-                </span>
+            ) : isSubscription ? (
+              <div>
+                <div className="text-xs text-gray-500">
+                  Organization Name:{" "}
+                  <span className="text-black">{subscriptionOrg?.name || "N/A"}</span>
+                </div>
+                <div className="text-xs text-gray-500">
+                  Organization Type:{" "}
+                  <span className="text-black">{subscriptionOrg?.type || "N/A"}</span>
+                </div>
+                <div className="text-xs text-gray-500">
+                  Deal Type:{" "}
+                  <span className="text-black">{subscriptionOrg?.dealType || "N/A"}</span>
+                </div>
+                {subscriptionOrg?.type === OrganizationTypes.Laboratory && (
+                  <>
+                    <div className="text-xs text-gray-500">
+                      Lab Tests:
+                      <ul className="text-black">
+                        {consultation?.labTestPDFUrls?.length ? (
+                          consultation.labTestPDFUrls.map((url, index) => (
+                            <li key={index}>
+                              <a
+                                href={url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-500 underline hover:text-blue-700"
+                              >
+                                Lab Test {index + 1}
+                              </a>
+                            </li>
+                          ))
+                        ) : (
+                          <li>No lab tests available</li>
+                        )}
+                      </ul>
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      Test Type:{" "}
+                      <span className="text-black">
+                        {consultation?.labConsultationType || "N/A"}
+                      </span>
+                    </div>
+                  </>
+                )}
+                <div className="text-xs text-gray-500">
+                  Payment Method:{" "}
+                  <span className="text-black">
+                    {consultation.payment?.paymentMethod || "N/A"}
+                  </span>
+                </div>
+                <div className="text-xs text-gray-500">
+                  Invoice Value:{" "}
+                  <span className="text-black">
+                    {consultation.payment?.invoiceValue || "N/A"}
+                  </span>
+                </div>
               </div>
-              Labass Offer:{" "}
-              <span className="text-black">
-                {promoCode?.isLabassOffer ? "Yes" : "No"}
-              </span>
-            </div>
-            <div className="text-xs text-gray-500">
-              Marketer Name:{" "}
-              <span className="text-black">
-                {marketerUser?.firstName || "N/A"}{" "}
-                {marketerUser?.lastName || ""}
-              </span>
-            </div>
-            <div className="text-xs text-gray-500">
-              Marketer Phone:{" "}
-              <span className="text-black">
-                {marketerUser?.phoneNumber || "N/A"}
-              </span>
-            </div>
+            ) : (
+              <div>
+                <div className="text-xs text-gray-500">
+                  Payment Method:{" "}
+                  <span className="text-black">
+                    {consultation.payment?.paymentMethod || "N/A"}
+                  </span>
+                </div>
+                <div className="text-xs text-gray-500">
+                  Invoice Value:{" "}
+                  <span className="text-black">
+                    {consultation.payment?.invoiceValue || "N/A"}
+                  </span>
+                </div>
+              </div>
+            )}
 
             {/* Action Buttons Section */}
             <div className="mt-4">
