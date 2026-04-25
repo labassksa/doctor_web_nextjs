@@ -27,6 +27,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <meta name="format-detection" content="telephone=yes" />
+      </head>
       <body className={`${inter.className}  `}>
         <PushNotificationProvider>
           <IncomingCallNotification />
