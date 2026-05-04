@@ -2,7 +2,8 @@
 .gitignore
 .github
 .next
-.env*
+.env.local
+.env.*.local
 !.env.example
 node_modules
 npm-debug.log*
