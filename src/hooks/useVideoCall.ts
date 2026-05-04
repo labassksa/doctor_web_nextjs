@@ -111,7 +111,10 @@ export const useVideoCall = ({ consultationId, userId, socket }: UseVideoCallPro
       });
 
       // Connect to room with audio and video enabled
-      await room.connect(process.env.NEXT_PUBLIC_LIVEKIT_URL!, livekitToken);
+      await room.connect(process.env.NEXT_PUBLIC_LIVEKIT_URL!, livekitToken, {
+        audio: true,
+        video: true,
+      } as any);
 
     } catch (error) {
       console.error('Failed to start video call:', error);

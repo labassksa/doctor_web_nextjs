@@ -39,6 +39,8 @@ const ChatPage: React.FC = () => {
   ); // For acceptance confirmation
   const [showPatientHistory, setShowPatientHistory] = useState(false);
   const [showObesitySurvey, setShowObesitySurvey] = useState(false);
+  const [showVitaminsSurvey, setShowVitaminsSurvey] = useState(false);
+  const [showSubscription, setShowSubscription] = useState(false);
 
   const router = useRouter();
   const params = useParams();
@@ -366,6 +368,22 @@ const ChatPage: React.FC = () => {
                     Obesity Survey ({consultationInfo.obesitySurvey.survey.length})
                   </button>
                 )}
+                {consultationInfo.subscription?.surveys?.length > 0 && (
+                  <button
+                    onClick={() => setShowVitaminsSurvey(true)}
+                    className="bg-green-500 hover:bg-green-600 text-white text-xs py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 relative z-10"
+                  >
+                    Vitamins Survey
+                  </button>
+                )}
+                {consultationInfo.subscription && consultationInfo.subscription.organization === null && (
+                  <button
+                    onClick={() => setShowSubscription(true)}
+                    className="bg-orange-500 hover:bg-orange-600 text-white text-xs py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 relative z-10"
+                  >
+                    Subscription
+                  </button>
+                )}
               </div>
             </div>
           )}
@@ -557,6 +575,139 @@ const ChatPage: React.FC = () => {
             <div className="p-4 border-t border-gray-200">
               <button
                 onClick={() => setShowPatientHistory(false)}
+                className="w-full bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Subscription Modal */}
+      {showSubscription && consultationInfo?.subscription && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-md max-h-[90vh] overflow-hidden">
+            <div className="flex justify-between items-center p-4 border-b border-gray-200">
+              <h2 className="text-lg font-semibold text-gray-900">Subscription Details</h2>
+              <button onClick={() => setShowSubscription(false)} className="text-gray-500 hover:text-gray-700 focus:outline-none">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="p-4 overflow-y-auto max-h-[70vh] space-y-3">
+              {/* Bundle info */}
+              {consultationInfo.subscription.bundle && (
+                <div className="border border-orange-200 rounded-lg p-3 bg-orange-50">
+                  <p className="text-xs font-semibold text-orange-700 mb-2">Bundle</p>
+                  {[
+                    { label: "Name", value: consultationInfo.subscription.bundle.name },
+                    { label: "Type", value: consultationInfo.subscription.bundle.type },
+                    { label: "Description", value: consultationInfo.subscription.bundle.description },
+                    { label: "Consultations", value: consultationInfo.subscription.bundle.consultationCount },
+                    { label: "Price", value: `${consultationInfo.subscription.bundle.price} ${consultationInfo.subscription.bundle.currency}` },
+                    { label: "Original Price", value: `${consultationInfo.subscription.bundle.originalPrice} ${consultationInfo.subscription.bundle.currency}` },
+                    { label: "Recurring", value: consultationInfo.subscription.bundle.recurringType },
+                  ].map(({ label, value }) => (
+                    <div key={label} className="flex justify-between text-xs py-1 border-b border-orange-100 last:border-0">
+                      <span className="text-gray-500">{label}</span>
+                      <span className="text-gray-900 font-medium">{value ?? "N/A"}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Subscription info */}
+              <div className="border border-gray-200 rounded-lg p-3 bg-gray-50">
+                <p className="text-xs font-semibold text-gray-700 mb-2">Subscription</p>
+                {[
+                  { label: "Status", value: consultationInfo.subscription.status },
+                  { label: "Price", value: `${consultationInfo.subscription.price} ${consultationInfo.subscription.currency}` },
+                  { label: "Recurring", value: consultationInfo.subscription.recurringType },
+                  { label: "Total Consultations", value: consultationInfo.subscription.totalConsultations },
+                  { label: "Remaining", value: consultationInfo.subscription.remainingConsultations },
+                  { label: "Last Billed", value: consultationInfo.subscription.lastBilledDate ?? "N/A" },
+                  { label: "Next Billing", value: consultationInfo.subscription.nextBillingDate ?? "N/A" },
+                  { label: "Expires At", value: consultationInfo.subscription.expiresAt ?? "N/A" },
+                ].map(({ label, value }) => (
+                  <div key={label} className="flex justify-between text-xs py-1 border-b border-gray-100 last:border-0">
+                    <span className="text-gray-500">{label}</span>
+                    <span className="text-gray-900 font-medium">{value ?? "N/A"}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="p-4 border-t border-gray-200">
+              <button
+                onClick={() => setShowSubscription(false)}
+                className="w-full bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Vitamins Survey Modal */}
+      {showVitaminsSurvey && consultationInfo?.subscription?.surveys?.length > 0 && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-md max-h-[90vh] overflow-hidden">
+            <div className="flex justify-between items-center p-4 border-b border-gray-200">
+              <h2 className="text-lg font-semibold text-gray-900">
+                Vitamins Survey - {consultationInfo.patient?.user?.firstName} {consultationInfo.patient?.user?.lastName}
+              </h2>
+              <button
+                onClick={() => setShowVitaminsSurvey(false)}
+                className="text-gray-500 hover:text-gray-700 focus:outline-none"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="p-4 overflow-y-auto max-h-[70vh]">
+              {(() => {
+                const answers = consultationInfo.subscription.surveys[0].answers;
+                return (
+                  <div className="space-y-3">
+                    {[
+                      { label: "Name", value: answers.name },
+                      { label: "Age", value: answers.age },
+                      { label: "Gender", value: answers.gender },
+                      { label: "Height (cm)", value: answers.height },
+                      { label: "Weight (kg)", value: answers.weight },
+                      { label: "City", value: answers.city },
+                    ].map(({ label, value }) => (
+                      <div key={label} className="border border-gray-200 rounded-lg p-3 bg-gray-50">
+                        <p className="text-xs font-medium text-gray-500 mb-1">{label}</p>
+                        <p className="text-sm text-gray-900">{value ?? "N/A"}</p>
+                      </div>
+                    ))}
+                    {answers.healthGoals?.length > 0 && (
+                      <div className="border border-gray-200 rounded-lg p-3 bg-gray-50">
+                        <p className="text-xs font-medium text-gray-500 mb-2">Health Goals</p>
+                        <div className="flex flex-wrap gap-2">
+                          {answers.healthGoals.map((goal: string) => (
+                            <span key={goal} className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full capitalize">
+                              {goal}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
+            </div>
+
+            <div className="p-4 border-t border-gray-200">
+              <button
+                onClick={() => setShowVitaminsSurvey(false)}
                 className="w-full bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
               >
                 Close
