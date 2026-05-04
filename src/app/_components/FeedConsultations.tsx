@@ -46,6 +46,7 @@ const FeedConsultations: React.FC<FeedConsultationsProps> = ({
         const marketerUser = marketerProfile?.user;
         const promoOrg = marketerProfile?.organization;
         const subscriptionOrg = consultation.subscription?.organization;
+        const promoDisplayOrg = subscriptionOrg || promoOrg;
         const isSubscription = !!consultation.subscription && !promoCode;
 
         return (
@@ -194,17 +195,17 @@ const FeedConsultations: React.FC<FeedConsultationsProps> = ({
               <div>
                 <div className="text-xs text-gray-500">
                   Organization Name:{" "}
-                  <span className="text-black">{promoOrg?.name || "N/A"}</span>
+                  <span className="text-black">{promoDisplayOrg?.name || "N/A"}</span>
                 </div>
                 <div className="text-xs text-gray-500">
                   Organization Type:{" "}
-                  <span className="text-black">{promoOrg?.type || "N/A"}</span>
+                  <span className="text-black">{promoDisplayOrg?.type || "N/A"}</span>
                 </div>
                 <div className="text-xs text-gray-500">
                   Deal Type:{" "}
-                  <span className="text-black">{promoOrg?.dealType || "N/A"}</span>
+                  <span className="text-black">{promoDisplayOrg?.dealType || "N/A"}</span>
                 </div>
-                {promoOrg?.type === OrganizationTypes.Laboratory && (
+                {promoDisplayOrg?.type === OrganizationTypes.Laboratory && (
                   <>
                     <div className="text-xs text-gray-500">
                       Lab Tests:
