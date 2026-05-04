@@ -194,17 +194,17 @@ const FeedConsultations: React.FC<FeedConsultationsProps> = ({
               <div>
                 <div className="text-xs text-gray-500">
                   Organization Name:{" "}
-                  <span className="text-black">{promoOrg?.name || "N/A"}</span>
+                  <span className="text-black">{subscriptionOrg?.name || "N/A"}</span>
                 </div>
                 <div className="text-xs text-gray-500">
                   Organization Type:{" "}
-                  <span className="text-black">{promoOrg?.type || "N/A"}</span>
+                  <span className="text-black">{subscriptionOrg?.type || "N/A"}</span>
                 </div>
                 <div className="text-xs text-gray-500">
                   Deal Type:{" "}
-                  <span className="text-black">{promoOrg?.dealType || "N/A"}</span>
+                  <span className="text-black">{subscriptionOrg?.dealType || "N/A"}</span>
                 </div>
-                {promoOrg?.type === OrganizationTypes.Laboratory && (
+                {subscriptionOrg?.type === OrganizationTypes.Laboratory && (
                   <>
                     <div className="text-xs text-gray-500">
                       Lab Tests:
