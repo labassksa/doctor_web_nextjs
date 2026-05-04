@@ -39,7 +39,7 @@ export interface PushNotificationHookReturn extends PushNotificationState {
 export function usePushNotifications(): PushNotificationHookReturn {
   const [state, setState] = useState<PushNotificationState>({
     supported: false,
-    permission: typeof window !== 'undefined' ? Notification.permission : 'default',
+    permission: 'default',
     token: null,
     error: null,
     loading: true,
@@ -172,6 +172,10 @@ export function usePushNotifications(): PushNotificationHookReturn {
     setState((prev) => ({ ...prev, loading: true, error: null }));
 
     try {
+      if (!('Notification' in window)) {
+        throw new Error('Notifications are not supported in this browser');
+      }
+
       // Request notification permission (standard Web API)
       const permission = await Notification.requestPermission();
       console.log('[usePushNotifications] Notification permission:', permission);
@@ -260,7 +264,7 @@ export function usePushNotifications(): PushNotificationHookReturn {
         };
 
         // Check if we have permission to show notification
-        if (Notification.permission === 'granted') {
+        if ('Notification' in window && Notification.permission === 'granted') {
           new Notification(notificationTitle, notificationOptions);
         }
       }

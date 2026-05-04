@@ -2,7 +2,16 @@
   "permissions": {
     "allow": [
       "Bash(git checkout *)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(ls src/)",
+      "Bash(ls app/)",
+      "Bash(ls pages/)",
+      "Bash(ls app/layout.tsx)",
+      "Bash(ls app/layout.js)",
+      "Bash(cat next.config.js)",
+      "Bash(cat next.config.ts)",
+      "Bash(cat next.config.mjs)",
+      "Bash(dir *)"
     ]
   }
 }
