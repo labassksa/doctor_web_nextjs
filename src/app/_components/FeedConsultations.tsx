@@ -48,6 +48,8 @@ const FeedConsultations: React.FC<FeedConsultationsProps> = ({
         const subscriptionOrg = consultation.subscription?.organization;
         const promoDisplayOrg = subscriptionOrg || promoOrg;
         const isSubscription = !!consultation.subscription && !promoCode;
+        const bundle = consultation.subscription?.bundle;
+        const isIndividualSubscription = isSubscription && (!subscriptionOrg || bundle?.whoSubscribes === "individual");
 
         return (
           <div
@@ -123,7 +125,7 @@ const FeedConsultations: React.FC<FeedConsultationsProps> = ({
                   Type:{" "}
                   <span className="text-black capitalize">{consultation.type || "N/A"}</span>
                 </div>
-                <div className="text-xs m-1 text-gray-500">
+                <div className="text-xs m-1 text-gray-500 flex items-center gap-2 flex-wrap">
                   Status:{" "}
                   <span
                     className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -138,6 +140,16 @@ const FeedConsultations: React.FC<FeedConsultationsProps> = ({
                   >
                     {consultation.status}
                   </span>
+                  {isIndividualSubscription && (
+                    <span className="px-2 py-1 rounded-full text-xs font-medium bg-violet-100 text-violet-700">
+                      Individual Subscription
+                    </span>
+                  )}
+                  {isSubscription && !isIndividualSubscription && (
+                    <span className="px-2 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-700">
+                      Org Subscription
+                    </span>
+                  )}
                 </div>
 
                 {/* Date Information */}
@@ -260,6 +272,39 @@ const FeedConsultations: React.FC<FeedConsultationsProps> = ({
                   Labass Offer:{" "}
                   <span className="text-black">
                     {promoCode.isLabassOffer ? "Yes" : "No"}
+                  </span>
+                </div>
+                <div className="text-xs text-gray-500">
+                  Payment Method:{" "}
+                  <span className="text-black">
+                    {consultation.payment?.paymentMethod || "N/A"}
+                  </span>
+                </div>
+                <div className="text-xs text-gray-500">
+                  Invoice Value:{" "}
+                  <span className="text-black">
+                    {consultation.payment?.invoiceValue || "N/A"}
+                  </span>
+                </div>
+              </div>
+            ) : isIndividualSubscription ? (
+              <div>
+                <div className="text-xs text-gray-500">
+                  Subscription Type:{" "}
+                  <span className="text-black">Individual</span>
+                </div>
+                <div className="text-xs text-gray-500">
+                  Bundle Type:{" "}
+                  <span className="text-black">{bundle?.type || "N/A"}</span>
+                </div>
+                <div className="text-xs text-gray-500">
+                  Bundle Name:{" "}
+                  <span className="text-black capitalize">{bundle?.name || "N/A"}</span>
+                </div>
+                <div className="text-xs text-gray-500">
+                  Bundle Price:{" "}
+                  <span className="text-black">
+                    {bundle?.price != null ? `${bundle.price} ${bundle?.currency || "SAR"}` : "N/A"}
                   </span>
                 </div>
                 <div className="text-xs text-gray-500">
