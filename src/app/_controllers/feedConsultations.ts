@@ -1,27 +1,37 @@
 import axios from "axios";
 
-export const fetchFeedConsultations = async () => {
+interface PaginationResponse<T> {
+  data: T[];
+  limit: number;
+  page: number;
+  total: number;
+}
+
+export const fetchFeedConsultations = async (
+  page: number = 1,
+  limit: number = 50
+): Promise<PaginationResponse<any>> => {
   try {
-    const token = localStorage.getItem("labass_doctor_token"); // Replace with your actual token retrieval method
+    const token = localStorage.getItem("labass_doctor_token");
     if (!token) {
       throw new Error("No token found");
     }
 
     const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/feed-consultations`,
+      `${process.env.NEXT_PUBLIC_API_URL}/feed-consultations?page=${page}&limit=${limit}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       }
     );
-    return response.data; // Return the consultations data
+    return response.data;
   } catch (error: any) {
     if (error.response && error.response.status === 401) {
-      throw new Error("Unauthorized: User not found."); // Throw an error that can be caught in the component
+      throw new Error("Unauthorized: User not found.");
     } else {
       console.error("Error fetching feed consultations:", error);
-      throw error; // Let other errors bubble up
+      throw error;
     }
   }
 };

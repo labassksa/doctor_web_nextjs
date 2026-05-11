@@ -7,17 +7,19 @@ import { fetchFeedConsultations } from "./_controllers/feedConsultations"; // Ad
 import { acceptConsultation } from "./_controllers/doctorAcceptConsultation"; // Add the controller for accepting consultations
 import { useRouter } from "next/navigation"; // Import useRouter for client-side navigation
 
+const ITEMS_PER_PAGE = 50;
+
 const FeedPage = () => {
   const [consultations, setConsultations] = useState<Consultation[]>([]);
   const [loading, setLoading] = useState(true);
-  const [acceptLoading, setAcceptLoading] = useState(false); // For loading during acceptance
-  const [confirmationMessage, setConfirmationMessage] = useState<string | null>(
-    null
-  ); // For showing confirmation message
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [acceptLoading, setAcceptLoading] = useState(false);
+  const [confirmationMessage, setConfirmationMessage] = useState<string | null>(null);
 
-  const router = useRouter(); // Initialize the router for navigation
+  const router = useRouter();
 
-  // Fetch consultations on page load
   useEffect(() => {
     const token = localStorage.getItem("labass_doctor_token");
     console.log(`Labass doctor Token: ${token} `);
@@ -27,12 +29,12 @@ const FeedPage = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const fetchedConsultations = await fetchFeedConsultations();
-        setConsultations(fetchedConsultations);
+        const result = await fetchFeedConsultations(1, ITEMS_PER_PAGE);
+        setConsultations(result.data);
+        setHasMore(result.page < Math.ceil(result.total / result.limit));
+        setCurrentPage(1);
       } catch (error: any) {
         if (error.message === "Unauthorized: User not found.") {
-          // Redirect to login page when user is unauthorized
-          //TODO, replace with correct url, client redirection
           router.push("/login");
         } else {
           console.error("Error fetching feed consultations:", error);
@@ -44,6 +46,26 @@ const FeedPage = () => {
 
     fetchData();
   }, [router]);
+
+  const loadMoreConsultations = async () => {
+    if (loadingMore) return;
+    setLoadingMore(true);
+    try {
+      const nextPage = currentPage + 1;
+      const result = await fetchFeedConsultations(nextPage, ITEMS_PER_PAGE);
+      if (result.data.length > 0) {
+        setConsultations((prev) => [...prev, ...result.data]);
+        setCurrentPage(nextPage);
+        setHasMore(result.page < Math.ceil(result.total / result.limit));
+      } else {
+        setHasMore(false);
+      }
+    } catch (error) {
+      console.error("Failed to load more consultations:", error);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
 
   // Handle consultation acceptance
   const handleAcceptConsultation = async (consultationId: number) => {
@@ -109,9 +131,20 @@ const FeedPage = () => {
             )}
             <FeedConsultations
               consultations={consultations}
-              onAccept={handleAcceptConsultation} // Pass the accept function to the child component
-              acceptLoading={acceptLoading} // Pass loading state for acceptance
+              onAccept={handleAcceptConsultation}
+              acceptLoading={acceptLoading}
             />
+            {hasMore && (
+              <div className="p-4 flex justify-center">
+                <button
+                  onClick={loadMoreConsultations}
+                  disabled={loadingMore}
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline disabled:opacity-50"
+                >
+                  {loadingMore ? "Loading..." : "Load More"}
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </main>
