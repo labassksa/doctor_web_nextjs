@@ -366,6 +366,19 @@ const FeedConsultations: React.FC<FeedConsultationsProps> = ({
                   </>
                 )}
                 <div className="text-xs text-gray-500">
+                  Marketer Phone:{" "}
+                  {consultation.marketer?.user?.phoneNumber ? (
+                    <a
+                      href={`tel:${consultation.marketer.user.phoneNumber}`}
+                      className="text-black underline"
+                    >
+                      {consultation.marketer.user.phoneNumber}
+                    </a>
+                  ) : (
+                    <span className="text-black">N/A</span>
+                  )}
+                </div>
+                <div className="text-xs text-gray-500">
                   Payment Method:{" "}
                   <span className="text-black">
                     {consultation.payment?.paymentMethod || "N/A"}
