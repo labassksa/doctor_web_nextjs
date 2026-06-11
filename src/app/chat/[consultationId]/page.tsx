@@ -373,7 +373,9 @@ const ChatPage: React.FC = () => {
                     onClick={() => setShowVitaminsSurvey(true)}
                     className="bg-green-500 hover:bg-green-600 text-white text-xs py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 relative z-10"
                   >
-                    Vitamins Survey
+                    {consultationInfo.subscription.surveys[0].type
+                      ? `${consultationInfo.subscription.surveys[0].type.charAt(0).toUpperCase()}${consultationInfo.subscription.surveys[0].type.slice(1)} Survey`
+                      : "Survey"}
                   </button>
                 )}
                 {consultationInfo.subscription && consultationInfo.subscription.organization === null && (
@@ -652,13 +654,18 @@ const ChatPage: React.FC = () => {
         </div>
       )}
 
-      {/* Vitamins Survey Modal */}
+      {/* Subscription Survey Modal */}
       {showVitaminsSurvey && consultationInfo?.subscription?.surveys?.length > 0 && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-lg w-full max-w-md max-h-[90vh] overflow-hidden">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-3xl max-h-[90vh] overflow-hidden">
             <div className="flex justify-between items-center p-4 border-b border-gray-200">
               <h2 className="text-lg font-semibold text-gray-900">
-                Vitamins Survey - {consultationInfo.patient?.user?.firstName} {consultationInfo.patient?.user?.lastName}
+                {(() => {
+                  const type = consultationInfo.subscription.surveys[0].type;
+                  return type
+                    ? `${type.charAt(0).toUpperCase()}${type.slice(1)} Survey`
+                    : "Survey";
+                })()} - {consultationInfo.patient?.user?.firstName} {consultationInfo.patient?.user?.lastName}
               </h2>
               <button
                 onClick={() => setShowVitaminsSurvey(false)}
@@ -672,7 +679,22 @@ const ChatPage: React.FC = () => {
 
             <div className="p-4 overflow-y-auto max-h-[70vh]">
               {(() => {
-                const answers = consultationInfo.subscription.surveys[0].answers;
+                const survey = consultationInfo.subscription.surveys[0];
+                const answers = survey.answers;
+                if (Array.isArray(answers)) {
+                  return (
+                    <div className="space-y-3">
+                      {answers.map((item: any, index: number) => (
+                        <div key={index} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                          <p className="text-sm font-medium text-gray-700 mb-2">{item.question}</p>
+                          <p className="text-sm text-gray-900 bg-white p-3 rounded border border-gray-100">
+                            {Array.isArray(item.answer) ? item.answer.join(", ") : (item.answer || "No answer provided")}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                }
                 return (
                   <div className="space-y-3">
                     {[
