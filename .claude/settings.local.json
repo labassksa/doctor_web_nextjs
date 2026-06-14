@@ -11,7 +11,10 @@
       "Bash(cat next.config.js)",
       "Bash(cat next.config.ts)",
       "Bash(cat next.config.mjs)",
-      "Bash(dir *)"
+      "Bash(dir *)",
+      "Bash(Get-ChildItem -Path \"D:\\\\Labass\\\\doctor_web_nextjs\" -Filter \"*feed*\" -Recurse -ErrorAction SilentlyContinue)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(xargs grep -l \"feed-consultations\")"
     ]
   }
 }

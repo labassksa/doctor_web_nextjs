@@ -37,6 +37,7 @@ export class Consultation {
     public labTestPDFUrls?: string[], // To store multiple URLs for lab test PDFs
     public labConsultationType?: string, // To store multiple URLs for lab test PDFs
     public hasSickLeave: boolean = false,
-    public subscription?: any
+    public subscription?: any,
+    public marketer?: MarketerProfile
   ) {}
 }
