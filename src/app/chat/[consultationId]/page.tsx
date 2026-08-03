@@ -101,7 +101,20 @@ const ChatPage: React.FC = () => {
   useEffect(() => {
     if (!socket || !userId || !consultationId) return;
 
-    socket.emit("joinRoom", { room: `${consultationId}` });
+    const joinConsultationRoom = () => {
+      socket.emit("joinRoom", { room: `${consultationId}` });
+    };
+
+    socket.on("connect", joinConsultationRoom);
+    if (socket.connected) joinConsultationRoom();
+
+    return () => {
+      socket.off("connect", joinConsultationRoom);
+    };
+  }, [socket, userId, consultationId]);
+
+  useEffect(() => {
+    if (!socket || !userId || !consultationId) return;
 
     socket.emit(
       "loadMessages",
