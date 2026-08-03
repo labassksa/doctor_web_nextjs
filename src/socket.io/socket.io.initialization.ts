@@ -16,7 +16,7 @@ const useSocket = (url: string, token: string) => {
 
     const socketInstance = io(url, {
       path: "/socket.io/",
-      transports: ["polling", "websocket"],
+      transports: ["websocket"],
       auth: { token },
       reconnectionAttempts: Infinity,
       reconnectionDelay: 1000,

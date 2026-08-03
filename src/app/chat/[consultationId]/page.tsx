@@ -31,6 +31,7 @@ const ChatPage: React.FC = () => {
   const [consultationInfo, setConsultationInfo] = useState<any>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
+  const [chatLoadError, setChatLoadError] = useState<string | null>(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [loadingEndConsultation, setLoadingEndConsultation] = useState(false);
   const [acceptLoading, setAcceptLoading] = useState(false); // Loading state for accepting consultation
@@ -101,29 +102,48 @@ const ChatPage: React.FC = () => {
   useEffect(() => {
     if (!socket || !userId || !consultationId) return;
 
-    const joinConsultationRoom = () => {
+    let syncedSocketId: string | undefined;
+    const connectionTimeout = window.setTimeout(() => {
+      if (!socket.connected) {
+        setChatLoadError("Unable to connect to chat. Please check your connection and try again.");
+        setLoading(false);
+      }
+    }, 10000);
+
+    const joinAndLoadConsultation = () => {
+      if (!socket.id || syncedSocketId === socket.id) return;
+      syncedSocketId = socket.id;
+      window.clearTimeout(connectionTimeout);
+      setChatLoadError(null);
       socket.emit("joinRoom", { room: `${consultationId}` });
+
+      socket.timeout(10000).emit(
+        "loadMessages",
+        { consultationId },
+        (error: Error | null, loadedMessages: Message[]) => {
+          if (error) {
+            setChatLoadError("Chat connected, but messages could not be loaded. Please try again.");
+            setLoading(false);
+            return;
+          }
+
+          setMessages(Array.isArray(loadedMessages) ? loadedMessages : []);
+          setLoading(false);
+        },
+      );
     };
 
-    socket.on("connect", joinConsultationRoom);
-    if (socket.connected) joinConsultationRoom();
+    socket.on("connect", joinAndLoadConsultation);
+    if (socket.connected) joinAndLoadConsultation();
 
     return () => {
-      socket.off("connect", joinConsultationRoom);
+      window.clearTimeout(connectionTimeout);
+      socket.off("connect", joinAndLoadConsultation);
     };
   }, [socket, userId, consultationId]);
 
   useEffect(() => {
     if (!socket || !userId || !consultationId) return;
-
-    socket.emit(
-      "loadMessages",
-      { consultationId },
-      (loadedMessages: Message[]) => {
-        setMessages(loadedMessages);
-        setLoading(false);
-      }
-    );
 
     const handleReceiveMessage = (newMessage: Message) => {
       setMessages((prevMessages) => [...prevMessages, newMessage]);
@@ -295,6 +315,18 @@ const ChatPage: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
+      {chatLoadError && (
+        <div className="fixed inset-x-4 top-4 z-[100] mx-auto flex max-w-xl items-center justify-between gap-4 rounded-lg bg-red-600 px-4 py-3 text-sm text-white shadow-lg">
+          <span>{chatLoadError}</span>
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className="shrink-0 rounded-md bg-white px-3 py-1.5 font-medium text-red-700"
+          >
+            Retry
+          </button>
+        </div>
+      )}
       <div className="sticky top-0 w-full bg-white z-50">
         <TabComponent />
       </div>
