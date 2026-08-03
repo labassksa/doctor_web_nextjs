@@ -45,8 +45,7 @@ messaging.onBackgroundMessage((payload) => {
 function generateNotificationActions(type) {
   if (type === 'INCOMING_CALL') {
     return [
-      { action: 'answer', title: 'Answer', icon: '/icons/icon-72x72.png' },
-      { action: 'decline', title: 'Decline', icon: '/icons/icon-72x72.png' }
+      { action: 'answer', title: 'Answer', icon: '/icons/icon-72x72.png' }
     ];
   }
   return [];
@@ -85,23 +84,6 @@ self.addEventListener('notificationclick', (event) => {
     event.waitUntil(
       clients.openWindow(getUrlForNotificationType(notificationData) + '?autoAnswer=true')
     );
-    return;
-  }
-
-  if (event.action === 'decline') {
-    // User declined the call
-    // Send decline signal to backend
-    fetch(`${self.location.origin}/api/video-calls/decline`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        consultationId: notificationData.consultationId,
-      }),
-    }).catch(error => {
-      console.error('[firebase-messaging-sw.js] Failed to send decline signal:', error);
-    });
     return;
   }
 

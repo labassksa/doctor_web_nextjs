@@ -1,41 +1,35 @@
 "use client";
-import React from 'react';
-import { Room } from 'livekit-client';
+import React, { useState } from 'react';
+import { ConnectionState, DisconnectReason } from 'livekit-client';
 import {
   LiveKitRoom,
   VideoConference,
   RoomAudioRenderer,
-  useTracks,
+  StartAudio,
+  useConnectionState,
+  useRemoteParticipants,
 } from '@livekit/components-react';
 import '@livekit/components-styles';
 
 interface VideoRoomProps {
-  room: Room | null;
   token: string;
-  onDisconnect: () => void;
-  isConnecting: boolean;
+  onDisconnect: (reason?: DisconnectReason) => void;
+  onConnected?: () => void;
+  onError?: (message: string) => void;
 }
 
 const VideoRoom: React.FC<VideoRoomProps> = ({
-  room,
   token,
   onDisconnect,
-  isConnecting,
+  onConnected,
+  onError,
 }) => {
-  if (isConnecting) {
-    return (
-      <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
-        <div className="bg-white rounded-lg p-8 text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-700">Connecting to video call...</p>
-        </div>
-      </div>
-    );
-  }
+  const [roomError, setRoomError] = useState<string | null>(null);
 
-  if (!room || !token) {
-    return null;
-  }
+  const reportError = (message: string) => {
+    setRoomError(message);
+    onError?.(message);
+  };
 
   return (
     <div className="fixed inset-0 bg-black z-50">
@@ -167,11 +161,24 @@ const VideoRoom: React.FC<VideoRoomProps> = ({
         }
       `}</style>
       <LiveKitRoom
-        room={room}
         token={token}
         serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
         connect={true}
+        audio={true}
+        video={true}
+        onConnected={() => {
+          setRoomError(null);
+          onConnected?.();
+        }}
         onDisconnected={onDisconnect}
+        onError={(error) => reportError(error.message || 'Unable to connect to the call.')}
+        onMediaDeviceFailure={(_, kind) =>
+          reportError(
+            kind === 'audioinput'
+              ? 'Microphone access failed. Check your browser permission.'
+              : 'Camera access failed. Check your browser permission.',
+          )
+        }
         style={{ height: '100vh', width: '100vw' }}
       >
         {/* Video Conference Layout with built-in controls */}
@@ -179,24 +186,33 @@ const VideoRoom: React.FC<VideoRoomProps> = ({
 
         {/* Audio Renderer - handles audio tracks */}
         <RoomAudioRenderer />
-
-        {/* Participant Count Display */}
-        <ParticipantCount />
+        <CallStatus />
+        <StartAudio label="Click to enable call audio" />
+        {roomError && (
+          <div className="fixed inset-x-4 top-16 z-[10000] mx-auto max-w-lg rounded-xl bg-red-600 px-4 py-3 text-center text-sm text-white shadow-lg">
+            {roomError}
+          </div>
+        )}
       </LiveKitRoom>
     </div>
   );
 };
 
-// Component to show participant count
-const ParticipantCount: React.FC = () => {
-  const tracks = useTracks();
-  const participantCount = tracks.length > 0 ? new Set(tracks.map(track => track.participant.identity)).size : 0;
+const CallStatus = () => {
+  const connectionState = useConnectionState();
+  const remoteParticipants = useRemoteParticipants();
+
+  const message = connectionState === ConnectionState.Reconnecting
+    ? 'Reconnecting…'
+    : connectionState === ConnectionState.Connected && remoteParticipants.length === 0
+      ? 'Waiting for the other participant…'
+      : null;
+
+  if (!message) return null;
 
   return (
-    <div className="absolute top-4 right-4 bg-gray-900 bg-opacity-80 text-white px-3 py-2 rounded-lg">
-      <span className="text-sm">
-        {participantCount} participant{participantCount !== 1 ? 's' : ''}
-      </span>
+    <div className="fixed top-4 left-1/2 z-[10000] -translate-x-1/2 rounded-full bg-gray-900/85 px-4 py-2 text-sm text-white shadow-lg">
+      {message}
     </div>
   );
 };

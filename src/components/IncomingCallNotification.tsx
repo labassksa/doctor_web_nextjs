@@ -19,7 +19,9 @@ interface IncomingCall {
 export function IncomingCallNotification() {
   const [incomingCall, setIncomingCall] = useState<IncomingCall | null>(null);
   const router = useRouter();
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const ringtoneTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const ringtoneRequestedRef = useRef(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -30,17 +32,13 @@ export function IncomingCallNotification() {
       console.log('[IncomingCallNotification] Incoming call received:', event.detail);
       setIncomingCall(event.detail);
 
-      // Play ringtone
-      if (audioRef.current) {
-        audioRef.current.loop = true;
-        audioRef.current.play().catch((error) => {
-          console.error('[IncomingCallNotification] Error playing ringtone:', error);
-        });
-      }
+      startRingtone();
 
       // Auto-dismiss after 60 seconds if not answered
+      clearAutoTimeout();
       timeoutRef.current = setTimeout(() => {
-        handleDecline();
+        setIncomingCall(null);
+        stopRingtone();
       }, 60000); // 60 seconds
     };
 
@@ -75,10 +73,44 @@ export function IncomingCallNotification() {
   }, []);
 
   const stopRingtone = () => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
+    ringtoneRequestedRef.current = false;
+    if (ringtoneTimerRef.current) {
+      clearInterval(ringtoneTimerRef.current);
+      ringtoneTimerRef.current = null;
     }
+  };
+
+  const startRingtone = () => {
+    if (ringtoneTimerRef.current || typeof window === 'undefined') return;
+
+    const AudioContextConstructor = window.AudioContext
+      || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    if (!AudioContextConstructor) return;
+
+    const context = audioContextRef.current ?? new AudioContextConstructor();
+    audioContextRef.current = context;
+    ringtoneRequestedRef.current = true;
+
+    const playTone = () => {
+      if (!ringtoneRequestedRef.current) return;
+      const oscillator = context.createOscillator();
+      const gain = context.createGain();
+      oscillator.frequency.value = 720;
+      gain.gain.setValueAtTime(0.12, context.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, context.currentTime + 0.35);
+      oscillator.connect(gain);
+      gain.connect(context.destination);
+      oscillator.start();
+      oscillator.stop(context.currentTime + 0.35);
+    };
+
+    void context.resume().then(() => {
+      if (!ringtoneRequestedRef.current) return;
+      playTone();
+      ringtoneTimerRef.current = setInterval(playTone, 1600);
+    }).catch(() => {
+      // Browsers may block foreground audio until the next user interaction.
+    });
   };
 
   const clearAutoTimeout = () => {
@@ -95,42 +127,21 @@ export function IncomingCallNotification() {
     setIncomingCall(null);
 
     // Navigate to chat page with the consultation
-    router.push(`/chat/${incomingCall?.consultationId}`);
+    router.push(`/chat/${incomingCall?.consultationId}?autoAnswer=true`);
   };
 
-  const handleDecline = () => {
-    console.log('[IncomingCallNotification] Call declined');
+  const handleDismiss = () => {
     stopRingtone();
     clearAutoTimeout();
-
-    // Emit videoCallEnded event to notify the caller
-    if (incomingCall) {
-      const event = new CustomEvent('decline-video-call', {
-        detail: {
-          consultationId: incomingCall.consultationId,
-          reason: 'declined',
-        },
-      });
-      window.dispatchEvent(event);
-    }
-
     setIncomingCall(null);
   };
 
   if (!incomingCall) {
-    return (
-      <>
-        {/* Hidden audio element for ringtone */}
-        <audio ref={audioRef} src="/sounds/ringtone.mp3" preload="auto" />
-      </>
-    );
+    return null;
   }
 
   return (
     <>
-      {/* Hidden audio element for ringtone */}
-      <audio ref={audioRef} src="/sounds/ringtone.mp3" preload="auto" />
-
       {/* Incoming call overlay */}
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
         <div className="bg-white rounded-2xl p-8 max-w-sm w-full mx-4 shadow-2xl">
@@ -155,13 +166,13 @@ export function IncomingCallNotification() {
           <div className="flex gap-4 justify-center">
             {/* Decline button */}
             <button
-              onClick={handleDecline}
+              onClick={handleDismiss}
               className="flex items-center gap-2 px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-xl font-medium transition-colors"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
-              Decline
+              Dismiss
             </button>
 
             {/* Answer button */}
