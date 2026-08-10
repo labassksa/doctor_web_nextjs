@@ -7,6 +7,7 @@ import { DiagnosisHit } from "../../../utils/types/diagnosis";
 import { searchClient } from "../../../lib/algoliaClient";
 import "@algolia/autocomplete-theme-classic";
 import { LabTestHit } from "@/utils/types/labTestHit";
+import { searchLocalDrugs } from "../../../utils/data/localDrugs";
 
 type SearchItem = DrugHit | DiagnosisHit | LabTestHit;
 
@@ -47,10 +48,20 @@ const SearchBar: React.FC<SearchBarProps> = ({
           {
             sourceId: indexName,
             getItems() {
-              return searchClient
+              const remoteHits = searchClient
                 .initIndex(indexName)
                 .search<SearchItem>(query)
                 .then(({ hits }) => hits);
+
+              // Merge locally-defined extra drugs on top of the Algolia
+              // results for the drugs index only.
+              if (indexName === "drugs") {
+                return remoteHits.then((hits) => [
+                  ...searchLocalDrugs(query),
+                  ...hits,
+                ]);
+              }
+              return remoteHits;
             },
             getItemInputValue({ item }) {
               if (isDrugHit(item)) {
